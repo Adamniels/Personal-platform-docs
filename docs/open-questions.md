@@ -18,8 +18,7 @@ These are the ones that make or break the platform over years. Treat as the prio
 ### Q1. What goes in a memory event
 
 **Status:** largely answered. Both halves written up, see `brain-knowledge-model.md` and
-`brain-event-model.md`. Three smaller threads remain, broken out as Q15 and Q17 below, and
-Q16 which is resolved.
+`brain-event-model.md`. One smaller thread remains, Q17 below. Q15 and Q16 are resolved.
 
 Everything downstream depends on it. Consolidation can only find patterns in what was
 recorded. Too coarse and there is nothing to learn from, too fine and it is noise that
@@ -45,19 +44,21 @@ use one table for all events, verbs and their declared evidence strength, granul
 per feature decision, the topic vocabulary model, relation kinds, and consolidation rules.
 Written up in `brain-event-model.md`.
 
-**Remaining threads**, all smaller and broken out separately: Q15 (immediacy scope) and
-Q17 (how level is represented). Q16 was resolved the same day, see Resolved.
+**Remaining thread**, broken out separately: Q17 (how level is represented). Q16 was resolved
+the same day and Q15 on 2026 08 04, both in Resolved.
 
 ### Q2. The trust model
 
-**Status:** open, and not blocked on anything. Good candidate for next.
+**Status:** in progress. Four of six sub questions settled 2026 08 04, see the settled notes
+below.
 
 Sub questions:
 
-- How does confidence move as evidence accumulates, and what makes it fall
-- What decays, how fast, and does decay differ by memory type
-- What happens when explicit profile truth and observed behaviour disagree
-- What applies silently versus what waits for approval
+- ~~How does confidence move as evidence accumulates, and what makes it fall~~ settled, D26
+- ~~What decays, how fast, and does decay differ by memory type~~ settled, D26
+- ~~What happens when explicit profile truth and observed behaviour disagree~~ settled, D23
+- What applies silently versus what waits for approval — settled for procedural rules
+  (D25), still open for knowledge model corrections
 - What can never be inferred at all
 - How duplicates get detected and merged
 
@@ -77,7 +78,29 @@ disagreement is real, and it is resolved by evidence. This also corrected D11, w
 listed skill levels as profile.
 
 Still open within this sub question: which knowledge model corrections apply silently and
-which go to the review queue.
+which go to the review queue. Lean is more through the queue at first, relaxed over time.
+
+**Also settled 2026 08 04:** scope, which the trust model needs for conflict resolution. Two
+dimensions, topic and entity, never feature. Global is the empty set. Scopes form a partial
+order, so conflict has three outcomes rather than two and the incomparable case must be
+surfaced rather than ranked. See D24. Q15 closed as a consequence, see Resolved.
+
+**Also settled 2026 08 04:** the first two sub questions, confidence movement and decay.
+Confidence, currency and status are three separate things that the docs were all calling
+decay. Confidence and currency are computed at read time from the evidence links and neither
+is stored, so nothing drifts from the evidence behind it and no background job rewrites
+memory. They combine per query rather than pre merged, because a question about now and a
+question about history want opposite weightings. Currency is undefined for records rather
+than slow. Decay curves are deliberately not chosen yet, on the same false precision grounds
+that killed the weighted relevance formula. See D26.
+
+Nothing is ever archived for being old or uncertain. Consolidation never retires anything;
+only Adam does, and retirement means inactive rather than destroyed. Editing a derived claim
+transfers provenance to Adam, and every edit or retirement records a judgment event so
+consolidation does not re propose what he just rejected. See D22 and D27.
+
+**Still open in Q2:** how duplicates get detected and merged, what can never be inferred at
+all, and which knowledge model corrections apply silently rather than through the queue.
 
 ### Q3. The retrieval interface
 
@@ -102,28 +125,6 @@ kept as evaluation data, so the lifecycle has to preserve them rather than delet
 It was dropped from the memory layers on the grounds that the wiki covers long form
 artifacts. That may not hold for documents that are not about a code project. Worth a
 second look before the schema is written.
-
-### Q15. Scope and confirmation on immediate writes
-
-**Status:** open. Deliberately parked, likely answered per feature.
-
-Assertions write immediately rather than waiting for consolidation, which is settled. What
-is not settled is scope and confirmation.
-
-**Scope.** If Adam says "be more concise" during a learning session, does that apply to
-learning or to everything. Getting this wrong silently is how a system develops habits
-nobody asked for. Current lean: default style preferences to global, let Adam narrow, and
-have the system state which scope it applied so it can be corrected.
-
-**Confirmation.** Adam wants a prompt when the system learns something, so he can decide.
-Some answered inline as a popup, some landing in the review queue, depending on what it is.
-Which kind goes where is probably a per feature decision, made when designing what that
-feature can learn from an interaction.
-
-**Note, and this is settled:** writing directly does not mean skipping consolidation.
-Anything written immediately is still picked up on the next consolidation pass to be linked,
-merged, or checked for contradiction. Immediate effect and later integration are separate
-concerns and both happen. More checks will be added here as the system grows.
 
 ### Q17. How the knowledge model represents level
 
@@ -200,6 +201,31 @@ the web frontends end up sharing enough to be worth reusing.
 ## Resolved
 
 Moved here with the answer and the date, so the reasoning is not lost.
+
+### Q15. Scope and confirmation on immediate writes
+
+**Resolved 2026 08 04: the question dissolved rather than being answered.**
+
+It asked two things. Whether "be more concise" said during a learning session applies to
+learning or everything, and whether the system should prompt when it learns something.
+
+Both existed only because D21 let a single in conversation utterance create a standing global
+rule immediately. That was generalising from one data point, which the rest of the design
+refuses to do. Removing it removes the question:
+
+- An instruction mid conversation is temporary, applies to that conversation only, and is
+  conversation state rather than memory. It is recorded as an event so consolidation can use
+  it later. See D25.
+- A standing rule exists only because Adam typed it into the rules list. It applies
+  immediately because he put it there, and there is nothing to confirm.
+- Scope was only hard for rules born from conversation. Those no longer exist. Procedural
+  memory is global by construction. See D24.
+
+The channel resolves what no amount of structure could: said in conversation means temporary,
+typed into the rules list means standing.
+
+Accepted cost: the brain will not learn working style passively. Consolidation proposing rules
+from repeated occurrences is deferred, and is a stronger basis than one sentence anyway.
 
 ### Q16. Do decisions get a first class side table
 

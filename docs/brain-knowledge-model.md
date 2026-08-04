@@ -1,8 +1,8 @@
 # What the brain should know
 
 Working document. Covers the first half of Q1 in `open-questions.md`: what the brain is
-trying to know about Adam. The second half, deriving concrete event shapes from this, is
-still open.
+trying to know about Adam. The second half, deriving concrete event shapes from this, is in
+`brain-event-model.md`.
 
 Last updated: 2026 08 04
 
@@ -126,11 +126,12 @@ solves this for code. Nothing solves it for the decisions themselves.
 
 Load bearing, and it belongs in the schema rather than being handled by decay rates.
 
-- A **claim** asserts something about now. "Adam is focused on embedded systems." It goes
-  stale and should decay.
+- A **claim** asserts something about now. "Adam is focused on embedded systems." Its
+  currency falls as time passes without supporting evidence.
 - A **record** states that something happened. "Adam decided the brain is its own service,
   because splitting memory across languages failed in v1." It is exactly as true in 2030 as
-  today and must not be quietly downweighted into invisibility.
+  today. Currency is undefined for records rather than merely slow, so staying visible is a
+  consequence of what a record is rather than a rule anyone has to enforce. See D26.
 
 This also resolves where current state ends and history begins. The boundary is not time,
 it is whether the fact asserts something about now or records something that happened.
@@ -242,6 +243,8 @@ well before the hard parts work.
 
 ## Still open in this area
 
-- Deriving concrete event shapes from the claims above. The mechanical half of Q1.
 - Whether "misconceptions corrected" is a real memory type or just a note.
-- How the knowledge model represents level. Discrete bands, a number, or something else.
+- How the knowledge model represents level. Discrete bands, a number, or something else (Q17).
+
+Closed since this was written: deriving concrete event shapes from the claims above, the
+mechanical half of Q1, now in `brain-event-model.md`.

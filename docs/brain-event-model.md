@@ -4,7 +4,7 @@ Working document. Covers the second half of Q1 in `open-questions.md`: the shape
 events. Companion to `brain-knowledge-model.md`, which covers what the brain is trying to
 know. This one covers how evidence gets in.
 
-Last updated: 2026 08 01
+Last updated: 2026 08 04
 
 ---
 
@@ -23,7 +23,9 @@ Implicit preference signal, and the high volume layer.
 advanced, accepted or rejected a proposal. Lower volume, much stronger signal.
 
 **Assertion.** He told the system something directly. Profile input, a correction, "I did
-this course three years ago." Highest authority. The manual entry path lands here.
+this course three years ago." Lands in whichever store the claim belongs to, and authority
+follows from that store rather than from the fact that Adam said it, see D23. The manual entry
+path lands here.
 
 **Decision.** A choice was made, with reasoning, in some context. A decision produces two
 things and they behave differently: an immutable **record** that the decision was made,
@@ -93,7 +95,7 @@ That is the extensibility seam, and the only place a feature gets to be special.
 
 **For.** Uniform consolidation queries. No schema change and no consolidator change when a
 feature is added. Free cross feature ordering, so correlations across features are just a
-time range query. Retention, decay, archival, idempotency and dedup implemented once.
+time range query. Retention, scoring, idempotency and dedup implemented once.
 
 **Against.** Payload is JSON, so no database level validation of feature specific fields.
 Payload shape drift is invisible without a version field. No friction means everything gets
@@ -240,6 +242,17 @@ Two refinements:
 - This generalises past decisions to any conflicting claims. v1's memory context response
   already had a conflicts field, which is exactly what this is for.
 
+**Scope comparison has three outcomes, not two.** Scope is a set of qualifiers rather than a
+single value (D24), so scopes form a partial order rather than a line:
+
+- one scope is strictly narrower, it wins regardless of age
+- scopes are equal, recency wins
+- scopes are incomparable, topic postgres versus entity operation rollout, and neither wins
+
+The third case cannot be resolved by ranking and has to be surfaced through the conflicts
+field. The natural implementation compares two scopes and returns a winner, which would be
+silently wrong.
+
 ---
 
 ## Consolidation
@@ -253,9 +266,11 @@ event at a time.
 - **Propose, never silently rewrite.** Human memory consolidation is lossy and
   reconstructive. A memory system that quietly rewrites itself into a plausible story is a
   failure mode, not a feature.
-- **Archive, never delete.** Archived items go somewhere readable, so Adam can see what was
-  archived and why. Nothing is irreversible, and a restore feature can be added later
-  without needing the data to have been kept deliberately.
+- **Consolidation never retires anything.** Nothing is deleted, and nothing is put away for
+  being old or low scoring. Consolidation proposes, creates supersedes relations, and lets
+  scores fall out of the evidence. Retiring is Adam's action alone. See D22.
+- **A retirement or edit by Adam is recorded as a judgment event** against the original, so
+  the next pass does not re propose what he just rejected. See D27.
 - **Consolidation still processes directly written memory.** Writing immediately does not
   mean skipping consolidation. Anything written directly is still picked up on the next pass
   to be linked, merged, or checked for contradiction with existing memory. Immediate effect
@@ -265,37 +280,39 @@ event at a time.
 
 ## Immediacy
 
-Partly settled, partly open. The open part is tracked as Q15 in `open-questions.md`.
+Settled 2026 08 04. Q15 is closed.
 
-**Settled:** consolidation exists to infer claims from behaviour. When Adam states something
-directly there is nothing to infer, so it does not wait.
+Consolidation exists to infer claims from behaviour. When Adam records a fact there is
+nothing to infer, so it does not wait.
 
-- **Assertions write immediately**, at highest authority, straight to profile or procedural
-  memory. "Talk to me more concisely" applies to the next message.
+- **Records write immediately.** A profile edit, "I took that course in 2023". Straight to
+  its store, no queue, no wait.
 - **Exposure, engagement and activity are evidence.** Generalizations from them wait for
   consolidation.
-- **Judgment splits along the same line.** "This session was too basic" is an assertion
-  about that session and is recorded as fact immediately. "Adam prefers advanced material"
-  is a claim about him and waits for repeated evidence.
-- **Features write records directly. Features never write claims directly.** This restates
-  v1's rule correctly: a decision is a record of something that happened, so there is
-  nothing to get wrong. A claim about Adam still goes through evidence and consolidation.
+- **Judgment splits along the same line.** "This session was too basic" is a record about
+  that session and lands immediately. "Adam prefers advanced material" is a claim about him
+  and waits for repeated evidence.
+- **Features write records directly. Features never write claims directly.** A claim about
+  Adam still goes through evidence and consolidation.
+- **An instruction mid conversation is a claim, not a record.** "Be more concise" applies to
+  that conversation only, is recorded as an event, and never becomes a standing rule by
+  itself. Standing rules are added to the rules list deliberately. See D25.
 
 **Consequence that contradicts earlier advice:** the profile snapshot was going to be cached
 for latency. A stale cache breaks immediacy. Cache with invalidation on write, which is
 trivial for one user, but it has to be a rule rather than something discovered later.
 
-**Still open, see Q15:** scope. If Adam says "be more concise" during a learning session,
-does that apply to learning or everything. Also the confirmation experience: a popup
-answered inline versus something landing in the review queue, and which kinds of learning
-warrant which. Likely decided per feature, when designing what each feature can learn from
-an interaction.
+**Correction 2026 08 04.** An earlier version had assertions writing immediately to
+procedural memory, with "talk to me more concisely applies to the next message" as the
+example. That single example generated the scope and confirmation problems tracked as Q15.
+Both dissolved once it was recognised as a claim rather than a record.
 
 ---
 
 ## Still open in this area
 
-- Scope and confirmation on immediate writes (Q15)
-- Whether decisions get a side table
-- How the knowledge model represents level: discrete bands, a number, or something else
+- How the knowledge model represents level: discrete bands, a number, or something else (Q17)
 - Whether "misconceptions corrected" is a real memory type or just a note
+
+Closed since this was written: scope and confirmation on immediate writes (Q15, closed by D24
+and D25), and whether decisions get a side table (Q16, resolved no, see "Decisions" above).
