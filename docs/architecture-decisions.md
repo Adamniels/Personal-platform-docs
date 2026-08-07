@@ -117,7 +117,8 @@ Consequence, and it simplifies a lot: no graceful degradation paths, no fallback
 no speculative portability seams. Features assume the brain is there.
 
 comment to remove after we gone through this: not all features need to have a hard dependency on the brain,
-that is not the point, just in the cases where a feature use the brain it should be a hard dependency
+that is not the point, just in the cases where a feature use the brain it should/will not work as good, meaning
+we have to implement something like the brain just for the feature if we want it as a standalone project.
 
 ### D10. Feature tiers
 
@@ -314,6 +315,10 @@ Related rule: consolidation proposes, it never silently rewrites.
 archiving was never the problem, the actor was. Pruning implies putting things away for being
 old or low value, which is the path by which a permanent record could quietly go invisible.
 Age and confidence are ranking inputs only. See D26.
+
+comment to remove after we gone through this: really have to think what a session means and how we keep track of that, it might be up to each
+feature to keep track of it, like learning sessions, it should hold every time I work with that
+session even if I opened a new chat in it.
 
 ### D23. Authority follows the store, not the source
 
