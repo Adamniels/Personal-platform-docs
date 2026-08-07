@@ -102,14 +102,8 @@ consolidation does not re propose what he just rejected. See D22 and D27.
 **Still open in Q2:** how duplicates get detected and merged, what can never be inferred at
 all, and which knowledge model corrections apply silently rather than through the queue.
 
-### Q3. The retrieval interface
-
-**Status:** open, better answered after Q1.
-
-What does a caller actually ask for, and what comes back. v1's single magic call taking an
-arbitrary task string was rejected, so the replacement needs designing. Probably several
-narrow calls rather than one broad one, but the shape depends on what callers turn out to
-need.
+Two of those three are consolidation side, so they belong with Q6 rather than being answered
+before consolidation exists.
 
 ### Q4. Review queue lifecycle
 
@@ -131,8 +125,10 @@ second look before the schema is written.
 **Status:** open.
 
 Discrete bands (competent, learning, touched, not pursuing), a number, or something else.
-Interacts with the seeding exception in `brain-knowledge-model.md`, where Adam's self
-assessed level is a prior that evidence is allowed to move.
+Interacts with seeding, where Adam's self assessed level is a prior evidence may move.
+
+**Now blocking:** milestone one seeds the knowledge model by hand, so this has to be answered
+before that schema is written. It moved from a loose end to the next thing needed.
 
 ### Q6. What consolidation actually does in v1 of the brain
 
@@ -140,6 +136,11 @@ assessed level is a prior that evidence is allowed to move.
 
 The deterministic rules first, LLM reasoning second question. How much can be done without
 a model at all.
+
+**Inherited from Q3 on 2026 08 04:** whether "evidence exists but no claim has formed yet" is
+a state retrieval can express, or whether silence is fine. It looked like a retrieval question
+and is not. It is a question about what consolidation does with weak evidence, and it does not
+arise until consolidation exists.
 
 ---
 
@@ -226,6 +227,35 @@ typed into the rules list means standing.
 
 Accepted cost: the brain will not learn working style passively. Consolidation proposing rules
 from repeated occurrences is deferred, and is a stronger basis than one sentence anyway.
+
+### Q3. The retrieval interface
+
+**Resolved 2026 08 04**, to the depth needed to build. The remaining detail is deliberately
+unwritten until there is a feature to shape it.
+
+**What v1 got wrong was genericity, not specificity.** One call served every caller, which is
+why it needed a provider interface plus a switch on workflow type. Named per feature calls
+delete the switch by construction. The response being nine kinds of thing was not the problem
+either; every caller getting the same nine was.
+
+**The answer:**
+
+- Named per feature calls facing out, in that feature's thin module in the brain, composed from
+  a small set of shared primitives facing in. Features never see the primitives and never merge
+  anything themselves.
+- The brain returns what it knows about Adam bearing on the task. The feature decides what to
+  do about it. The brain never returns "teach this next", because that is the feature's domain.
+- Calls are bespoke, items are not. Consistent item shape, with evidence references included by
+  default so "why do you believe this" is answerable at the point of use.
+- A call declares now versus history, since that changes how currency is weighted.
+- Conflicts are returned as conflicts, never silently resolved.
+
+**Milestone consequence:** D18 has no features, so it builds the primitives only and the
+evaluation harness is the first caller. Everything retrievable at that point is manually
+entered, since consolidation does not exist yet. Per feature calls arrive with the first
+feature.
+
+Detail in D28.
 
 ### Q16. Do decisions get a first class side table
 

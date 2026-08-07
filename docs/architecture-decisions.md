@@ -116,13 +116,16 @@ at that point.
 Consequence, and it simplifies a lot: no graceful degradation paths, no fallback adapters,
 no speculative portability seams. Features assume the brain is there.
 
+comment to remove after we gone through this: not all features need to have a hard dependency on the brain,
+that is not the point, just in the cases where a feature use the brain it should be a hard dependency
+
 ### D10. Feature tiers
 
-| Tier | Owns a database | Owns a frontend | Talks to the brain |
-|---|---|---|---|
-| Federated | yes | yes | yes, both directions |
-| Embedded | no, stores in the brain | rendered by the core shell | yes, it is inside it |
-| Linked | irrelevant | its own | no |
+| Tier      | Owns a database         | Owns a frontend            | Talks to the brain   |
+| --------- | ----------------------- | -------------------------- | -------------------- |
+| Federated | yes                     | yes                        | yes, both directions |
+| Embedded  | no, stores in the brain | rendered by the core shell | yes, it is inside it |
+| Linked    | irrelevant              | its own                    | no                   |
 
 The tier mostly decides itself: **a feature written in a language other than the brain's is
 federated by construction**, because embedded means living inside the brain's process and
@@ -130,6 +133,9 @@ database. Anything owning real domain data is federated too.
 
 Current placement: wiki federated, projects federated, learning federated,
 reminders is not a feature at all, see D13.
+
+comment to remove after we gone through this: what even could be an embedded feature? i dont think any feature
+is directly "in" the brain, it is more just either a core feature in core or it is its own feature
 
 ### D11. Profile lives in the brain
 
@@ -228,6 +234,12 @@ memory centre a general item browser rather than a profile page. That is not fir
 work, but it is where a meaningful share of the real build sits, so the milestone stays honest
 only if the browser is understood as coming later rather than being implied by "profile".
 
+Also 2026 08 04, from D28: there are no features in this milestone, so there are no per feature
+context calls to write. It builds the shared retrieval primitives, and **the evaluation harness
+is the first caller.** Everything retrievable at this point is manually entered, profile plus
+seeded topics plus rules, since consolidation does not exist yet. Events accumulate without
+being retrieved, which is correct rather than a gap.
+
 ### D19. One table for all events, with an extensible schema
 
 Every event, from every feature, in one table. Structure is a verb, a subject, a context,
@@ -312,11 +324,11 @@ profile, where they could never be corrected.
 Authority is a property of what a claim is about, and that is already expressed by which
 store the claim lives in:
 
-| Store | What it holds | Who can change it |
-|---|---|---|
-| Profile | identity, goals, values, interests, preferences, working style | Adam only. Evidence never moves it, it can at most raise the question |
-| Knowledge model | what Adam knows and how well | Adam seeds it, evidence moves it, silently or through the review queue |
-| Reported history | what Adam says happened | Adam only, since nothing else can confirm or contradict it |
+| Store            | What it holds                                                  | Who can change it                                                      |
+| ---------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Profile          | identity, goals, values, interests, preferences, working style | Adam only. Evidence never moves it, it can at most raise the question  |
+| Knowledge model  | what Adam knows and how well                                   | Adam seeds it, evidence moves it, silently or through the review queue |
+| Reported history | what Adam says happened                                        | Adam only, since nothing else can confirm or contradict it             |
 
 So there is no authority ordering to apply at read time and no exception to carve out. Where
 a claim lives tells you who wins. The v1 ordering survives only inside a single store, for
@@ -463,6 +475,55 @@ browser rather than a profile page plus a rules list. Architecturally free, but 
 share of the real build work sits there, and it is larger than what D18 scoped for the first
 milestone.
 
+### D28. Retrieval is per feature calls over shared primitives
+
+**What v1 actually got wrong was genericity, not specificity.** One call had to serve every
+caller, which is exactly why it needed a provider interface plus a switch on workflow type
+inside. The switch was a symptom. Name the call "context for a learning session" and it
+disappears, because the routing already happened at the function name.
+
+Same for the response being nine kinds of thing. A learning session genuinely needs many kinds
+at once. The problem was that every caller got the same nine whether they made sense or not.
+Richness was never the issue, uniformity was.
+
+**Structure, and it is D5 applied to retrieval:**
+
+- **Facing out**, named per feature calls, living in that feature's thin module in the brain,
+  written when that feature is built rather than guessed at now.
+- **Facing in**, a small set of shared primitives: profile lookup, knowledge for topics,
+  history for a subject, scoring, conflict detection. Features never see these, so D6 holds and
+  a feature never merges anything itself. They exist once, so ranking logic is not
+  reimplemented in five modules.
+
+**The D7 line, and it is the thing that will actually go wrong if unwatched.** The brain
+returns what it knows about Adam bearing on the task. The feature decides what to do about it.
+So the brain says competent at this topic, last evidenced in March, two misconceptions
+corrected, adjacent topics he is solid on, one conflicting claim. Learning reads that and
+decides what to teach. The brain never returns "teach B tree internals next", because that is
+pedagogy and pedagogy is learning's domain. Nothing structural prevents this, only judgment
+each time a call is added.
+
+**Response shape:**
+
+- Calls are bespoke, items are not. Every returned item carries id, content, store, provenance,
+  confidence, currency, scope, evidence references, status.
+- **Evidence references are included by default, not on request.** That is what makes "why do
+  you believe this" answerable where it is used rather than only in the memory centre, and it
+  is what decides whether the thing is still trusted in year three.
+- A call declares whether it is asking about now or about history, since that changes how
+  currency is weighted, see D26.
+- Conflicts come back as conflicts rather than being silently resolved, see D24 and D26.
+
+**This is not the generic envelope that was rejected.** That one was an envelope every
+_feature_ conforms to when exposing its own data, which is the upward contract. A consistent
+item shape on the way down is a different thing and costs nothing.
+
+**Milestone consequence.** D18 builds no features, so there are no named calls to write and the
+context packet has no caller. Milestone one builds the shared primitives, and the evaluation
+harness is the first caller. Per feature modules arrive with the first feature, shaped by what
+it really needs. That is better than designing the learning context call before learning
+exists.
+
 ---
 
 ## The two contracts
@@ -471,12 +532,15 @@ Both stay small. If either drifts large, something has gone wrong.
 
 **Downward, what the brain offers a feature**
 
-- get context for a task
+- a named context call per feature, shaped when that feature is built, see D28
 - get profile snapshot
 - search
 - record event
 - propose memory candidate
 - index document
+
+The first entry read "get context for a task" until 2026 08 04. That wording was close enough
+to v1's rejected single magic call to be the same mistake under a new name. Replaced by D28.
 
 **Upward, what a feature offers the brain**
 
@@ -568,7 +632,7 @@ guarantees the two drift apart.
 Ideas worth keeping, as ideas, not code. v2 is a fresh build.
 
 - **Events then consolidate.** Features record what happened; a background pass interprets
-  it later. Refined in D21: features never write *claims* directly, but records are fine,
+  it later. Refined in D21: features never write _claims_ directly, but records are fine,
   and explicit assertions do not wait for consolidation to take effect.
 - **The review queue.** Proposals with evidence and confidence that Adam accepts or rejects.
   This is the trust mechanism and the reason the system stays inspectable.
