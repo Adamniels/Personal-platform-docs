@@ -1,10 +1,14 @@
 # How the brain records things
 
 Working document. Covers the second half of Q1 in `open-questions.md`: the shape of memory
-events. Companion to `brain-knowledge-model.md`, which covers what the brain is trying to
-know. This one covers how evidence gets in.
+events. Companion to `knowledge-model.md`, which covers what the brain is trying to know. This
+one covers how evidence gets in.
 
-Last updated: 2026 08 04
+Last updated: 2026 09 02
+
+**Read this with D29 in mind.** The platform is multi user and every user has their own
+isolated brain. The event kinds, the shape, the verbs and the consolidation rules are generic.
+Where the text says "Adam" in a rule rather than an example, read "the owner".
 
 ---
 
@@ -102,9 +106,14 @@ Payload shape drift is invisible without a version field. No friction means ever
 dumped in, so the filter test has to be enforced by discipline. Payload field queries are
 slower than real columns.
 
-**Why the against side is weaker than it looks:** single user. In a decade this table might
-hold a few hundred thousand rows. Every scale objection is irrelevant at that volume, so
-ignore partitioning and hot table concerns. The real costs are type safety and discipline.
+**Why the against side is weaker than it looks:** volume per user. In a decade one user's
+events might amount to a few hundred thousand rows, and every read and every consolidation
+pass is scoped to one user by D29, so that is the number that matters rather than the size of
+the table. Every scale objection is irrelevant at that volume, so ignore partitioning and hot
+table concerns. The real costs are type safety and discipline.
+
+Updated 2026 09 02: this previously read "single user", which stopped being true with D29. The
+conclusion is unchanged, the reason is per user scope rather than a single account.
 
 **Required from the start:**
 
@@ -188,7 +197,7 @@ other beyond both being links:
 - **Topic to topic.** Broader than, related to. Lets the knowledge model say Adam is solid
   on databases generally while actively learning one corner of it.
 - **Entity to entity.** This platform project is that wiki project. The cross feature link
-  table from `architecture-decisions.md` D12.
+  table from `High-level/docs/platform-architecture.md` D12.
 - **Memory to memory.** This evidence supports that claim. This claim contradicts that one.
   This supersedes that.
 
@@ -257,9 +266,14 @@ silently wrong.
 
 ## Consolidation
 
-Offline, periodic, whole corpus. The advantage is not just batching: merging, pruning, and
-finding connections between things learned separately are impossible while looking at one
-event at a time.
+Offline, periodic, and over the whole corpus **for one user**. The advantage is not just
+batching: merging, pruning, and finding connections between things learned separately are
+impossible while looking at one event at a time.
+
+**The per user boundary is not a detail.** Under D29 users are fully isolated, so a
+consolidation pass that reached across users would not merely produce a wrong claim, it would
+move one person's evidence into another person's memory. Every pass takes a user and every
+query inside it is scoped.
 
 **Rules:**
 
@@ -316,3 +330,31 @@ Both dissolved once it was recognised as a claim rather than a record.
 
 Closed since this was written: scope and confirmation on immediate writes (Q15, closed by D24
 and D25), and whether decisions get a side table (Q16, resolved no, see "Decisions" above).
+
+---
+
+## Decisions recorded here
+
+### D19. One table for all events, with an extensible schema
+
+
+Every event, from every feature, in one table. Structure is a verb, a subject, a context,
+two timestamps (when it happened and when it was recorded), and a feature specific payload.
+
+Rationale: consolidation can then reason over events from features that did not exist when
+it was written. Per feature tables would mean teaching the consolidator about every new
+feature.
+
+Scale objections do not apply, but the reason is not "single user", which stopped being true
+with D29. It is that every read and every consolidation pass is scoped to one user, so the
+volume that matters is the corpus per user rather than the size of the table. That stays
+small no matter how many accounts exist.
+
+Feature facing consequences:
+
+- **Features may add verbs, but a new verb must declare its evidence strength and
+  polarity.** A verb the brain cannot weigh is unusable.
+- Every event carries a payload version and an idempotency key.
+- Relation types are likewise extensible. A fixed enum will be wrong within a year.
+
+Detail in `event-model.md`.

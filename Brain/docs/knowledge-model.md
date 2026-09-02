@@ -1,10 +1,16 @@
 # What the brain should know
 
 Working document. Covers the first half of Q1 in `open-questions.md`: what the brain is
-trying to know about Adam. The second half, deriving concrete event shapes from this, is in
-`brain-event-model.md`.
+trying to know about a user. The second half, deriving concrete event shapes from this, is in
+`event-model.md`.
 
-Last updated: 2026 08 04
+Last updated: 2026 09 02
+
+**Read this with D29 in mind.** The platform is multi user and every user has their own
+isolated brain. The six categories, the filter and the claim versus record distinction are
+generic and apply to any user. The specific claims, seeds and examples throughout are Adam's
+own case, since he is the first user and the one seeding it. Where this document says "Adam"
+in a rule rather than an example, read "the owner".
 
 ---
 
@@ -139,7 +145,7 @@ it is whether the fact asserts something about now or records something that hap
 **One thing can produce both.** A decision generates an immutable record that it was made,
 plus a standing claim that it is in force. The record never decays; the claim can be
 superseded. So the split applies within a single event rather than sorting events into two
-buckets. See "Decisions" in `brain-event-model.md`.
+buckets. See "Decisions" in `event-model.md`.
 
 ---
 
@@ -170,7 +176,7 @@ miscalibrated, so a stale self assessment gets corrected rather than locked in.
 
 **Updated 2026 08 04.** This was previously written as a deliberate exception to the
 authority ordering. It is not an exception, it is a consequence of the two halves living in
-different stores. See D23 in `architecture-decisions.md`.
+different stores. See D23 in `High-level/docs/platform-architecture.md`.
 
 ---
 
@@ -247,4 +253,4 @@ well before the hard parts work.
 - How the knowledge model represents level. Discrete bands, a number, or something else (Q17).
 
 Closed since this was written: deriving concrete event shapes from the claims above, the
-mechanical half of Q1, now in `brain-event-model.md`.
+mechanical half of Q1, now in `event-model.md`.
