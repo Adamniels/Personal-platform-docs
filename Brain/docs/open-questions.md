@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 Questions answered inside the brain. Treat this as the priority track: these are the ones that
 make or break the platform over years.
@@ -143,9 +143,8 @@ arise until consolidation exists.
 
 ## Architecture and infrastructure
 
-Smaller, and none of them block the brain work. Two of them now sit on the core track instead,
-which D18 puts first: Q9 shapes how much of the core is actually code, and Q18 has to be
-settled before the brain schema is written.
+Smaller, and none of them block the brain work. One of them now sits on the core track instead,
+which D18 puts first: Q9 shapes how much of the core is actually code.
 
 ### Q5. Does document memory survive
 
@@ -162,8 +161,6 @@ second look before the schema is written.
 
 Open elsewhere, but blocking or shaping brain work.
 
-- **Q18**, how user isolation is enforced, in `High-level/docs/open-questions.md`. Has to be
-  settled before the memory schema is written, since every table carries a user id.
 - **Q11**, Temporal, in `High-level/docs/open-questions.md`. Would orchestrate the
   consolidation schedule if it earns its place.
 - **Q13**, the feature list, in `High-level/docs/open-questions.md`. Each feature decides what

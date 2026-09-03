@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 Questions answered inside the core. Questions whose answer needs the brain as well live in
 `High-level/docs/open-questions.md`.
@@ -29,9 +29,6 @@ code, which would leave only a registry and token verification as an actual serv
 
 Open elsewhere, but blocking or shaping core work.
 
-- **Q18**, how user isolation is enforced, in `High-level/docs/open-questions.md`. Row level
-  security or query layer discipline. Touches the accounts schema and every memory table, so it
-  is answered once for both.
 - **Q12**, shell UX ambition, in `High-level/docs/open-questions.md`. The core serves the shell,
   but what the shell should be is a product question.
 

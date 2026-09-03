@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 The core is the platform's infrastructure: the thing every feature is reached through and
 nothing interesting lives inside. This document is what the core is and what it owns. The
@@ -81,5 +81,7 @@ Decisions that live in other folders and bind the core anyway.
 - **D18**, first milestone. The core track goes first, and its scope is listed there.
 - **D29**, multi user from the start. Accounts, tokens and every downstream scope.
 - **D30**, notification delivery is its own service, and specifically not this one.
+- **D33**, isolation is enforced by the datastore. Binds the accounts schema and how the core
+  connects to it.
 - **The two contracts**, in `High-level/docs/feature-contract.md`. Both directions carry a
   verified user identity, which the core issues.

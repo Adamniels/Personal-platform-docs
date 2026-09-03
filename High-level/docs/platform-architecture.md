@@ -12,7 +12,7 @@ Anything you only need when you sit down to write a particular service lives in 
 folder instead, `Brain/docs/` or `Core/docs/`. Those documents point back here. This one points
 down to them for detail rather than repeating it.
 
-**On numbering.** Decision numbers (D1 to D32) and question numbers (Q1 to Q19) are global
+**On numbering.** Decision numbers (D1 to D33) and question numbers (Q1 to Q19) are global
 and permanent across every folder. They are never renumbered when a document moves, because
 decisions cite each other and several carry amendment history. `docs/README.md` at the repo
 root maps every number to the file it lives in.
@@ -80,16 +80,25 @@ of the brain rather than its owner keeps that honest.
 ### D9. We are not designing for standalone extraction
 
 
-The brain is a hard dependency. A feature may run without it but will not be useful without
-it. If a feature ever needs to become a standalone product, a brain equivalent gets written
-at that point.
+**A feature that uses the brain depends on it hard.** It may still run without it and will not
+be much good without it, and nothing is built to soften that.
+
+Whether a feature uses the brain at all is that feature's own business, decided when it is
+planned. Some will lean on it heavily, some barely, and one that never touches it is a normal
+case rather than an exception. This decision says nothing about which.
+
+**Amended 2026 09 03.** This previously opened "the brain is a hard dependency", flat, which
+read as a claim about every feature. It is a claim about the features that use it, and the rest
+of the decision never rested on the stronger version.
+
+**What extraction would actually cost.** If a feature ever had to become a standalone product,
+you would rebuild the slice of brain behaviour that feature actually used, not the brain. That
+is usually a small fraction of it, and saying so keeps this an accepted cost rather than
+something that reads like a threat. The earlier wording, "a brain equivalent gets written", made
+it sound far larger than it is.
 
 Consequence, and it simplifies a lot: no graceful degradation paths, no fallback adapters,
-no speculative portability seams. Features assume the brain is there.
-
-comment to remove after we gone through this: not all features need to have a hard dependency on the brain,
-that is not the point, just in the cases where a feature use the brain it should/will not work as good, meaning
-we have to implement something like the brain just for the feature if we want it as a standalone project.
+no speculative portability seams. A feature that uses the brain assumes the brain is there.
 
 ### D11. Profile lives in the brain
 
@@ -273,6 +282,47 @@ from it. It has no reason to live there.
 Scope: accept a delivery request from a feature or from the user, hold it until its time or
 condition, deliver it, record that it was delivered. Nothing else. Its language is not decided
 here, see the open questions.
+
+### D33. Isolation is enforced by the datastore, not by query discipline
+
+
+**Decided 2026 09 03, closing Q18.** D29 made every row belong to exactly one user. This decides
+where that is enforced: in the database, not in the code that queries it.
+
+**The rule is the property, not the mechanism.** Wherever a datastore can refuse to return
+another user's rows, it does, and application code is never the only thing standing between two
+accounts. For Postgres that mechanism is row level security. A feature on a store that cannot do
+this says so and says what it does instead. D10 leaves feature shape open deliberately, but this
+is a security property rather than a shape.
+
+**Why, and it is one sentence: the two options fail in opposite directions.** Query layer
+discipline fails open, since a forgotten `WHERE` clause returns another person's rows, raises
+nothing, and looks like a working feature. Row level security fails closed, since the same
+forgotten clause returns zero rows. The class of bug does not get rarer, it stops being able to
+leak.
+
+**What it takes to actually hold.** Each of these is a way to have it switched off while looking
+configured, which is why they are written down rather than left to setup time:
+
+- The application connects as a role that does not own its tables, since owners bypass policies
+  by default. Migrations run as the owner.
+- `FORCE ROW LEVEL SECURITY` on every scoped table, so ownership is not a bypass either.
+- The user identity reaches the database as a transaction scoped setting, `SET LOCAL`, set
+  inside the transaction. Plain `SET` on a pooled connection survives into whatever request
+  borrows that connection next, which is a cross user leak caused by the very mechanism adopted
+  to prevent them. The footgun does not disappear, it moves from every query site to one place
+  in connection handling, which is the whole point.
+- Maintenance access is a named, deliberate bypass path rather than an ad hoc superuser
+  connection.
+
+**Where it pays beyond the obvious.** D29 calls a missing filter during consolidation "the
+difference between a clustering bug and a data leak". Under this decision the consolidation job
+sets one user id and cannot see past it, so that case stops being something to test for.
+
+**Accepted cost.** A query returning nothing has a reason that is not visible in the SQL, so
+debugging gains a first question. Every connection checkout needs the setting, including
+background jobs and anything run by hand. Policies add a predicate to every plan, though
+`user_id` belongs in those indexes regardless.
 
 ---
 
