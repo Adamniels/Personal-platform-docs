@@ -3,9 +3,9 @@
 Working document. Covers what the brain is trying to know about a user. Deriving concrete event
 shapes from this is the companion job, and it is in `event-model.md`.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
-**Read this with D29 in mind.** The platform is multi user and every user has their own
+**Read this as multi user.** The platform is multi user and every user has their own
 isolated brain. The six categories, the filter and the claim versus record distinction are
 generic and apply to any user. The specific claims, seeds and examples throughout are Adam's
 own case, since he is the first user and the one seeding it. Where this document says "Adam"
@@ -137,7 +137,8 @@ Load bearing, and it belongs in the schema rather than being handled by decay ra
 - A **record** states that something happened. "Adam decided the brain is its own service,
   because splitting memory across languages failed in v1." It is exactly as true in 2030 as
   today. Currency is undefined for records rather than merely slow, so staying visible is a
-  consequence of what a record is rather than a rule anyone has to enforce. See D26.
+  consequence of what a record is rather than a rule anyone has to enforce. See how currency
+  works in `trust-model.md`.
 
 This also resolves where current state ends and history begins. The boundary is not time,
 it is whether the fact asserts something about now or records something that happened.
@@ -174,9 +175,8 @@ The seed splits across two stores, and that split is what makes it safe:
 Justification: self assessed skill level is one of the few places where people are reliably
 miscalibrated, so a stale self assessment gets corrected rather than locked in.
 
-**Updated 2026 08 04.** This was previously written as a deliberate exception to the
-authority ordering. It is not an exception, it is a consequence of the two halves living in
-different stores. See D23 in `High-level/docs/platform-architecture.md`.
+This is not an exception to how authority works, it is a consequence of the two halves living
+in different stores. See `trust-model.md`.
 
 ---
 
@@ -258,4 +258,4 @@ The candidates are discrete bands, a number, or something else. Whatever is chos
 with seeding above, where the owner's self assessment is a prior that evidence may move, so it
 needs to support a value that shifts in small steps. It also has to avoid claiming a precision
 nobody can justify, which is the argument that already killed the weighted relevance formula and
-the decay curves in D26.
+the decay curves in `trust-model.md`.

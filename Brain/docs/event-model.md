@@ -5,7 +5,7 @@ covers what the brain is trying to know. This one covers how evidence gets in.
 
 Last updated: 2026 09 03
 
-**Read this with D29 in mind.** The platform is multi user and every user has their own
+**Read this as multi user.** The platform is multi user and every user has their own
 isolated brain. The event kinds, the shape, the verbs and the consolidation rules are generic.
 Where the text says "Adam" in a rule rather than an example, read "the owner".
 
@@ -27,7 +27,8 @@ advanced, accepted or rejected a proposal. Lower volume, much stronger signal.
 
 **Assertion.** He told the system something directly. Profile input, a correction, "I did
 this course three years ago." Lands in whichever store the claim belongs to, and authority
-follows from that store rather than from the fact that Adam said it, see D23. The manual entry
+follows from that store rather than from the fact that Adam said it, see `trust-model.md`. The
+manual entry
 path lands here.
 
 **Decision.** A choice was made, with reasoning, in some context. A decision produces two
@@ -94,7 +95,7 @@ That is the extensibility seam, and the only place a feature gets to be special.
 
 ---
 
-## Decided: one table for all events
+## One table for all events
 
 **For.** Uniform consolidation queries. No schema change and no consolidator change when a
 feature is added. Free cross feature ordering, so correlations across features are just a
@@ -107,21 +108,20 @@ slower than real columns.
 
 **Why the against side is weaker than it looks:** volume per user. In a decade one user's
 events might amount to a few hundred thousand rows, and every read and every consolidation
-pass is scoped to one user by D29, so that is the number that matters rather than the size of
+pass is scoped to one user, so that is the number that matters rather than the size of
 the table. Every scale objection is irrelevant at that volume, so ignore partitioning and hot
 table concerns. The real costs are type safety and discipline.
 
-Updated 2026 09 02: this previously read "single user", which stopped being true with D29. The
-conclusion is unchanged, the reason is per user scope rather than a single account.
+This is not a "single user" argument, which stopped being true once the platform went multi
+user. The conclusion is unchanged, the reason is per user scope rather than a single account.
 
 **Required from the start:**
 
 - a payload version on every event, so shape drift is visible rather than silent
-- an idempotency key, since consolidation is idempotent by decision and events may be
-  re emitted on retry
+- an idempotency key, since consolidation is idempotent and events may be re emitted on retry
 
-**Decided: no side table for decisions.** See "Decisions" below for why they turned out not
-to be a special case.
+**No side table for decisions.** See "Decisions" below for why they turned out not to be a
+special case.
 
 ---
 
@@ -249,7 +249,7 @@ Two refinements:
   already had a conflicts field, which is exactly what this is for.
 
 **Scope comparison has three outcomes, not two.** Scope is a set of qualifiers rather than a
-single value (D24), so scopes form a partial order rather than a line:
+single value, see scope in `trust-model.md`, so scopes form a partial order rather than a line:
 
 - one scope is strictly narrower, it wins regardless of age
 - scopes are equal, recency wins
@@ -267,7 +267,7 @@ Offline, periodic, and over the whole corpus **for one user**. The advantage is 
 batching: merging, pruning, and finding connections between things learned separately are
 impossible while looking at one event at a time.
 
-**The per user boundary is not a detail.** Under D29 users are fully isolated, so a
+**The per user boundary is not a detail.** Users are fully isolated, so a
 consolidation pass that reached across users would not merely produce a wrong claim, it would
 move one person's evidence into another person's memory. Every pass takes a user and every
 query inside it is scoped.
@@ -279,9 +279,9 @@ query inside it is scoped.
   failure mode, not a feature.
 - **Consolidation never retires anything.** Nothing is deleted, and nothing is put away for
   being old or low scoring. Consolidation proposes, creates supersedes relations, and lets
-  scores fall out of the evidence. Retiring is Adam's action alone. See D22.
+  scores fall out of the evidence. Retiring is the owner's action alone.
 - **A retirement or edit by Adam is recorded as a judgment event** against the original, so
-  the next pass does not re propose what he just rejected. See D27.
+  the next pass does not re propose what he just rejected. See `trust-model.md`.
 - **Consolidation still processes directly written memory.** Writing immediately does not
   mean skipping consolidation. Anything written directly is still picked up on the next pass
   to be linked, merged, or checked for contradiction with existing memory. Immediate effect
@@ -302,8 +302,6 @@ until consolidation is what decides a claim has not formed.
 
 ## Immediacy
 
-Settled 2026 08 04.
-
 Consolidation exists to infer claims from behaviour. When Adam records a fact there is
 nothing to infer, so it does not wait.
 
@@ -318,41 +316,13 @@ nothing to infer, so it does not wait.
   Adam still goes through evidence and consolidation.
 - **An instruction mid conversation is a claim, not a record.** "Be more concise" applies to
   that conversation only, is recorded as an event, and never becomes a standing rule by
-  itself. Standing rules are added to the rules list deliberately. See D25.
+  itself. Standing rules are added to the rules list deliberately, see `trust-model.md`.
 
 **Consequence that contradicts earlier advice:** the profile snapshot was going to be cached
 for latency. A stale cache breaks immediacy. Cache with invalidation on write, which is
 trivial for one user, but it has to be a rule rather than something discovered later.
 
-**Correction 2026 08 04.** An earlier version had assertions writing immediately to
-procedural memory, with "talk to me more concisely applies to the next message" as the
-example. That single example generated a cluster of scope and confirmation problems, all of
-which dissolved once it was recognised as a claim rather than a record.
-
----
-
-## Decisions recorded here
-
-### D19. One table for all events, with an extensible schema
-
-
-Every event, from every feature, in one table. Structure is a verb, a subject, a context,
-two timestamps (when it happened and when it was recorded), and a feature specific payload.
-
-Rationale: consolidation can then reason over events from features that did not exist when
-it was written. Per feature tables would mean teaching the consolidator about every new
-feature.
-
-Scale objections do not apply, but the reason is not "single user", which stopped being true
-with D29. It is that every read and every consolidation pass is scoped to one user, so the
-volume that matters is the corpus per user rather than the size of the table. That stays
-small no matter how many accounts exist.
-
-Feature facing consequences:
-
-- **Features may add verbs, but a new verb must declare its evidence strength and
-  polarity.** A verb the brain cannot weigh is unusable.
-- Every event carries a payload version and an idempotency key.
-- Relation types are likewise extensible. A fixed enum will be wrong within a year.
-
-Detail in `event-model.md`.
+Worth being explicit about, because it is the thing that was hardest to see: "talk to me more
+concisely" is a claim about the person wearing an imperative, not a record. Treating it as a
+record generated a whole cluster of scope and confirmation problems, all of which dissolved once
+it was recognised for what it is.
