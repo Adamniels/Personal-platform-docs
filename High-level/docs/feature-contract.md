@@ -21,9 +21,33 @@ so there is nothing to standardise and nothing to declare.
 
 ## Features own their data
 
-A wiki concept node belongs to the wiki. A learning session belongs to learning. What crosses
-into the brain is a reference, a summary, an embedding, and the events. Never the artifact
-itself.
+A wiki concept node belongs to the wiki. A learning session belongs to learning. The brain never
+holds a copy of any of it.
+
+**A feature sends the brain something once, and that is the whole exchange.** What it sends is
+what the brain should learn from that feature, which by the filter in
+`Brain/docs/knowledge-model.md` means the things that change an output outside that feature. It
+is always a small, deliberately chosen set rather than a feed of everything that happened.
+
+**The evidence comes with it, as readable text that stands on its own.** "Worked through B tree
+internals, got the page split case wrong twice, said the material was too basic" is something you
+can read and judge years later without asking anything else. Every event carries one, in a field
+of its own, see the event shape in `Brain/docs/event-model.md`. The brain never holds a pointer
+into a feature and follows it later to find out what it meant.
+
+That matters more than it looks. The trust model rests on "why do you believe this about me"
+always being answerable. A pointer makes that conditional on the feature still being up and the
+row still existing, so deleting a session would quietly leave the brain holding a claim it can no
+longer justify. Self contained evidence makes the answer unconditional, and it is also what keeps
+the promise that nothing in the brain is ever destroyed, since a feature cannot destroy it by
+deleting its own data.
+
+The cost, worth being clear about: write time is the only chance. Whatever a feature leaves out
+of that payload is gone, because an event records a moment and cannot be backfilled. Payloads
+should err generous.
+
+The brain embeds what it holds, so memory becomes semantically retrievable. It does not embed
+feature content, because it does not have any.
 
 The brain owns what that data means about the person, and that is the whole division.
 
@@ -124,10 +148,9 @@ Both stay small. If either drifts large, something has gone wrong.
 
 - a named context call per feature, shaped when that feature is built
 - get profile snapshot
-- search
+- search, meaning search memory, not search everything the platform knows
 - record event
 - propose memory candidate
-- index document
 
 The first entry used to read "get context for a task", which was close enough to v1's rejected
 single magic call to be the same mistake under a new name. `Brain/docs/brain-architecture.md`

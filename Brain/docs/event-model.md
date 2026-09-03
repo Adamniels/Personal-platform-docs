@@ -44,22 +44,26 @@ cannot be backfilled.
 
 ## The shape
 
-One structure, five parts: a verb, a subject, a context, two timestamps, and a feature
-specific payload.
+One structure, six parts: a verb, a subject, a context, two timestamps, a piece of readable
+evidence, and a feature specific payload.
 
 ```
 verb:      exposed
-subject:   topic: postgres-indexing, artifact: article-4471
+subject:   topic: postgres-indexing
 context:   feature: news, run: r-8812
 occurred:  2026-07-31T07:02   recorded: 2026-07-31T07:02
-payload:   { rank: 3, score: 0.82, reason: "backend architecture interest" }
+evidence:  "Shown the article 'Index only scans and when they stop working',
+            ranked third, surfaced for backend architecture interest."
+payload:   { rank: 3, score: 0.82 }
 ```
 
 ```
 verb:      abandoned
-subject:   topic: postgres-indexing, artifact: session-231
+subject:   topic: postgres-indexing
 context:   feature: learning, run: r-9001
-payload:   { sections_done: 2, sections_total: 6, stopped_at: "b-tree internals" }
+evidence:  "Session on B-tree internals. Got through 2 of 6 sections, stopped at
+            page splits after getting the same case wrong twice."
+payload:   { sections_done: 2, sections_total: 6, stopped_at: "page splits" }
 ```
 
 ```
@@ -67,18 +71,37 @@ verb:      asserted
 subject:   topic: distributed-systems
 context:   feature: core, source: manual-entry
 occurred:  2023-09-01        recorded: 2026-07-31
-payload:   { statement: "took a distributed systems course",
-             claimed_level: "intermediate" }
+evidence:  "Says he took a distributed systems course in autumn 2023 and came out
+            of it around intermediate."
+payload:   { claimed_level: "intermediate" }
 ```
 
 ```
 verb:      decided
 subject:   project: personal-platform
 context:   feature: projects
+evidence:  "Decided the brain is its own service, because splitting memory across
+            two languages failed in v1. Rejected keeping memory inside the core
+            backend."
 payload:   { decision: "brain is its own service",
-             rationale: "splitting memory across languages failed in v1",
              rejected: ["memory inside core backend"] }
 ```
+
+**Evidence is readable text and it has to stand on its own.** Nothing in an event points at a
+row in a feature's database that the brain would have to go and read later, so the evidence is
+still readable and judgeable years later whether or not that session or article still exists.
+See "Features own their data" in `High-level/docs/feature-contract.md`.
+
+**Why it is its own field rather than just something in the payload.** The memory centre has to
+answer "why do you believe this about me" for every claim, whatever feature the evidence came
+from. If the readable text sits in a different place in every feature's payload, rendering that
+answer means the brain knowing how to turn each feature's JSON into a sentence, which is per
+feature code in the brain's UI for something every feature has. A named field renders uniformly
+and understands nothing.
+
+It also puts the writing of that sentence at the only moment anyone actually knows what
+happened, which is when the event is emitted. The payload keeps the structured, queryable
+version of the same thing, and the two are allowed to overlap.
 
 Note the third example. Three years between the two timestamps, and recency weighting stays
 correct. That is the whole reason both columns exist.
@@ -119,6 +142,8 @@ user. The conclusion is unchanged, the reason is per user scope rather than a si
 
 - a payload version on every event, so shape drift is visible rather than silent
 - an idempotency key, since consolidation is idempotent and events may be re emitted on retry
+- readable evidence, so any claim resting on this event can be explained without reading the
+  payload or asking the feature
 
 **No side table for decisions.** See "Decisions" below for why they turned out not to be a
 special case.

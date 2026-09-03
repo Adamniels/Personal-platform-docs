@@ -67,8 +67,8 @@ apply silently.
 Scope is not an enum. It is the set of qualifiers on a claim, matched against the situation a
 retrieval request already carries. Global is the empty set, which matches everything.
 
-Two dimensions: **topic**, from the topic vocabulary, and **entity**, a specific project or
-artifact.
+Two dimensions: **topic**, from the topic vocabulary, and **entity**, a specific named thing
+like a project. A name the brain holds, not a pointer into a feature.
 
 **Feature is deliberately not one.** It describes where a claim fires rather than what it is
 about, and it is the dimension that lets contradictory behaviour accumulate quietly: concise in
