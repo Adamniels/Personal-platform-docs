@@ -40,15 +40,19 @@ that have not been designed.
 ### Q12. Shell UX ambition
 
 
-Unified product, launcher plus dashboard, or thin index. Deliberately left open, since it
-constrains nothing else. Worth deciding before any frontend work starts.
+**Narrowed 2026 09 03.** The architecture half is decided in D34, which was the half that
+constrained anything. This question previously claimed it constrained nothing else, which was
+false: it decided whether the core grows, whether the brain becomes a dashboard proxy, and
+whether features have to expose UI pieces.
 
-### Q13. The feature list
+What is left is how rich the shell is. A list of links, a front page with real content on it, or
+one unified product where every feature shares a design system and navigation feels seamless.
 
-
-Known so far: wiki, projects, learning sessions, news, reminders and notifications as a
-delivery capability. Almost certainly incomplete, and Q1 would benefit from more of it
-being on the table.
+Deliberately still open, and this half genuinely cannot be reasoned out. It is answered by using
+the thing. Two things are worth carrying into that: the stated ambition of a main daily tool
+makes the list of links unlikely, and the unified product is the largest permanent cost in the
+whole plan, larger than D14's polyglot cost, because every feature ever built has to be dragged
+into the same design system forever.
 
 ### Q14. Mobile
 
@@ -61,6 +65,24 @@ the web frontends end up sharing enough to be worth reusing.
 ## Resolved
 
 Moved here with the answer and the date, so the reasoning is not lost.
+
+### Q13. The feature list
+
+
+**Closed 2026 09 03. It was not a question.** It asked for the complete list of features while
+admitting in the same sentence that any answer would still be incomplete, which is a note
+wearing the shape of a question. A platform built over years has no complete list, so nothing
+could ever have resolved it.
+
+What it was carrying is a set of candidates worth designing with in mind, none of them
+committed. Those are in `High-level/docs/platform-architecture.md` under "Candidate features".
+
+Its stated justification was stale as well. It said Q1 would benefit from more of the list on
+the table, but Q1 had already overturned that: the event schema was made extensible by
+construction precisely so the list would stop mattering.
+
+One thing did get settled while closing it, and Q12 needs it: the platform's intended size. See
+"What this is" in `platform-architecture.md`.
 
 ### Q18. How user isolation is enforced
 

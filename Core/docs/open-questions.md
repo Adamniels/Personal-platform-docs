@@ -25,15 +25,6 @@ code, which would leave only a registry and token verification as an actual serv
 
 ---
 
-## Also constrained by
-
-Open elsewhere, but blocking or shaping core work.
-
-- **Q12**, shell UX ambition, in `High-level/docs/open-questions.md`. The core serves the shell,
-  but what the shell should be is a product question.
-
----
-
 ## Resolved
 
 ### Q7. Core in Go or C#

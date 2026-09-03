@@ -146,15 +146,6 @@ arise until consolidation exists.
 Smaller, and none of them block the brain work. One of them now sits on the core track instead,
 which D18 puts first: Q9 shapes how much of the core is actually code.
 
-### Q5. Does document memory survive
-
-
-**Status:** open, small.
-
-It was dropped from the memory layers on the grounds that the wiki covers long form
-artifacts. That may not hold for documents that are not about a code project. Worth a
-second look before the schema is written.
-
 ---
 
 ## Also constrained by
@@ -163,13 +154,21 @@ Open elsewhere, but blocking or shaping brain work.
 
 - **Q11**, Temporal, in `High-level/docs/open-questions.md`. Would orchestrate the
   consolidation schedule if it earns its place.
-- **Q13**, the feature list, in `High-level/docs/open-questions.md`. Each feature decides what
-  it contributes to memory when it is built, so the list shapes the corpus without blocking any
-  of the work above.
 
 ---
 
 ## Resolved
+
+### Q5. Does document memory survive
+
+
+**Closed 2026 09 03: it does not, and the question went with it.** It only existed because
+document memory had been dropped on the grounds that the wiki covers long form artifacts, and
+the wiki may never be built, so the justification was the thing that failed rather than the
+conclusion.
+
+Document memory stays out of the brain. If a feature ever needs long form artifacts remembered,
+that is raised then, with that feature's actual needs rather than a guess about the wiki's.
 
 ### Q3. The retrieval interface
 

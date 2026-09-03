@@ -4,7 +4,7 @@ Working document. Covers the second half of Q1 in `open-questions.md`: the shape
 events. Companion to `knowledge-model.md`, which covers what the brain is trying to know. This
 one covers how evidence gets in.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 **Read this with D29 in mind.** The platform is multi user and every user has their own
 isolated brain. The event kinds, the shape, the verbs and the consolidation rules are generic.
@@ -191,17 +191,15 @@ consolidation rather than inline. Never similarity alone.
 Wanted, and expected to grow. **Relation types must be extensible**, same lesson as verbs:
 a fixed enum will be wrong within a year.
 
-Three kinds exist today and should stay distinct, since they have nothing to do with each
+Two kinds exist today and should stay distinct, since they have nothing to do with each
 other beyond both being links:
 
 - **Topic to topic.** Broader than, related to. Lets the knowledge model say Adam is solid
   on databases generally while actively learning one corner of it.
-- **Entity to entity.** This platform project is that wiki project. The cross feature link
-  table from `High-level/docs/platform-architecture.md` D12.
 - **Memory to memory.** This evidence supports that claim. This claim contradicts that one.
   This supersedes that.
 
-The third is what makes the brain inspectable. "Why do you believe this about me" is
+The second is what makes the brain inspectable. "Why do you believe this about me" is
 answered entirely by evidence relations, and that is what makes it trustworthy in year
 three rather than quietly ignored.
 

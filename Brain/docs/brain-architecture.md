@@ -8,7 +8,7 @@ How the brain is built. Everything here is internal: you need it to write the br
 not need it to understand the platform.
 
 What the rest of the system needs to know about the brain is elsewhere, and is not repeated
-here: D1, D11, D12, D15, D33 and the memory layers are in
+here: D1, D11, D15, D33 and the memory layers are in
 `High-level/docs/platform-architecture.md`, and the two contracts are in
 `High-level/docs/feature-contract.md`.
 

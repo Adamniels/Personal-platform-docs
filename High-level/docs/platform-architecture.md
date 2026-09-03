@@ -12,7 +12,7 @@ Anything you only need when you sit down to write a particular service lives in 
 folder instead, `Brain/docs/` or `Core/docs/`. Those documents point back here. This one points
 down to them for detail rather than repeating it.
 
-**On numbering.** Decision numbers (D1 to D33) and question numbers (Q1 to Q19) are global
+**On numbering.** Decision numbers (D1 to D34) and question numbers (Q1 to Q19) are global
 and permanent across every folder. They are never renumbered when a document moves, because
 decisions cite each other and several carry amendment history. `docs/README.md` at the repo
 root maps every number to the file it lives in.
@@ -31,6 +31,14 @@ root maps every number to the file it lives in.
 The second version of a personal platform. A stable core plus features that are built one
 at a time, independently. A shared brain (memory) is the thing that makes it a platform
 rather than a collection of apps, and it is the part most worth getting right.
+
+**The ambition is large, and it is worth stating because several decisions only make sense at
+that size.** This is meant to become the owner's main tool in daily life, with features added
+over years rather than a small fixed set that gets finished. Three things follow. D3, features
+never call each other, is the rule that matters most, since it is what keeps growth linear
+instead of quadratic. The shell is a real surface rather than a list of links, see Q12. And the
+polyglot cost accepted in D14 is paid once per feature rather than once, by one person, which is
+a real running cost rather than a one time one.
 
 Related Notion pages: "Northstar OS" (project entry), "Northstar OS, my personal platform",
 "Wiki project". v1 material lives under "My Platform (1)" and "Implementing memory" and is
@@ -70,8 +78,7 @@ follows from holding those two apart.
 ### D1. The brain is its own service
 
 
-It owns three things: memory, cross feature brokering, and cross feature entity links.
-It has its own database.
+It owns two things: memory, and cross feature brokering. It has its own database.
 
 Rationale: if memory lives inside a general backend, that backend slowly absorbs every
 feature's data because it is always the path of least resistance. Making the core a client
@@ -118,13 +125,20 @@ lives in the knowledge model and evidence is allowed to move it. See D23.
 ### D12. Cross feature entity links live in the brain, generically
 
 
-Stored as: this entity in feature A relates to that entity in feature B. Created by hand,
-by the owner, through a feature's UI which asks the brain what could be linked rather than
-asking the other feature.
+**Removed 2026 09 03.** It said the brain stores links of the form "this entity in feature A is
+that entity in feature B", created by hand through a feature's UI.
 
-The only concrete case today is a platform project that also exists in the wiki. The
-generic form is chosen not because reuse is expected but because the alternative is a
-wiki id column on the project table, which breaks D3. Consistency, not anticipated reuse.
+**Why it is gone.** A link between two features' entities is not knowledge about a person, it is
+a join table, and it ended up in the brain only because the brain was the one place both
+features could reach. That is the failure D1 was written against, a general service absorbing
+what sits next to it because it is the path of least resistance, applied to the brain instead of
+the core. This document already half admitted it, listing the layer as "not memory, but lives in
+the brain's database". Its single concrete case, a platform project that is also a wiki page,
+also depended on a feature that may never be built.
+
+**What replaces it: nothing, on purpose.** If two features ever need to know they refer to the
+same real thing, that is decided then, with a real case in hand rather than a generic mechanism
+built for none.
 
 ### D14. Language is fixed per layer, and chosen per feature
 
@@ -242,7 +256,7 @@ costs nothing. This is not an anticipated requirement dressed as a decision, it 
 where the cheap option now and the correct option later are the same option.
 
 **Everything in the brain is scoped to a user.** Events, claims, records, profile, procedural
-rules, the knowledge model, topic vocabulary and cross feature links. There is no unscoped
+rules, the knowledge model and topic vocabulary. There is no unscoped
 memory of any kind.
 
 **Users are fully isolated.** No shared memory, no shared claims, no cross user consolidation.
@@ -324,11 +338,45 @@ debugging gains a first question. Every connection checkout needs the setting, i
 background jobs and anything run by hand. Policies add a predicate to every plan, though
 `user_id` belongs in those indexes regardless.
 
+### D34. The shell is not part of the core
+
+
+**Decided 2026 09 03, splitting Q12.** Q12 asked how ambitious the shell should be and treated
+that as one question. It is two. How rich the front page is cannot be settled on paper and stays
+open. Where the shell lives and how it gets its data is answerable now, and it binds the core,
+which is being built first.
+
+**The core serves the login flow and nothing past it.** Everything before you hold a token has
+to be the core's. Everything after it belongs to the shell. `Core/docs/core-architecture.md`
+previously listed "serving the shell" among what the core owns, which fails the core's own rule:
+a front page changes constantly, and anything that gives you a reason to deploy the core does
+not belong in it.
+
+**The shell is its own thing, and most naturally a feature.** Under D10 a feature is whatever
+registers itself with the core and talks to the brain through the two contracts. A shell does
+exactly that, so nothing new has to be invented to hold it.
+
+**Front page data comes from the browser, not from the brain.** Each feature contributes its own
+piece of the page and the browser calls that feature directly with the user's token. The
+rejected alternative was the brain brokering it, which D1 permits and which is wrong here: it
+turns memory into a dashboard proxy and puts the most visited page in the platform behind a fan
+out through a service whose job is knowing things about a person. The browser route also means
+adding a feature never means editing something central.
+
+D3 is untouched. No feature calls another. A browser making requests on the user's behalf is the
+user, not a feature.
+
+**Accepted cost.** The front page is several parallel calls from the browser rather than one
+composed response, every feature has to expose something browser facing for its own piece, and
+cross origin authentication has to work for every feature rather than only for navigation. That
+is the price of refusing a composition layer in the middle, and a composition layer is exactly
+what would have grown into the thing the core is forbidden to be.
+
 ---
 
 ## Memory layers
 
-Reduced from v1's seven to four, plus links:
+Reduced from v1's seven to four:
 
 1. **Profile**, identity, goals, values, interests, preferences and working style. Entered by
    the owner, moved only by the owner. See D23 for what is deliberately not in here
@@ -338,15 +386,51 @@ Reduced from v1's seven to four, plus links:
    values, a decision's current status, and reported history are single sourced and live here
    too
 4. **Procedural**, versioned rules for how the system should behave
-5. **Cross feature links** (not memory, but lives in the brain's database)
 
 Dropped: working memory (it is workflow state and belongs to whatever runs the workflow),
-graph memory (never built in v1, and the link table covers the real use case), document
-memory (overlaps heavily with what the wiki now does).
+graph memory (never built in v1), and document memory. Document memory was dropped on the
+grounds that the wiki covers long form artifacts, which no longer holds since the wiki may never
+exist, but the conclusion stands on its own: if a feature ever needs long form artifacts
+remembered, that is raised then. Closed as Q5.
 
-Document memory is dropped **provisionally**. The reasoning assumes the wiki covers long
-form artifacts, which may not hold for documents that are not about a code project. Tracked
-as Q5, and worth a second look before the schema is written.
+---
+
+## Candidate features
+
+Not a plan, and not a commitment. These are things that might get built, written down so the
+platform is designed with them in mind rather than around them. Any of them may be dropped, and
+things not on this list will certainly appear. It was Q13 until 2026 09 03, closed because
+asking for a complete list of features was never a question that could be answered.
+
+- **Projects.** Likely the first feature after the core.
+- **Learning new topics.** The candidate the brain design leans on hardest. D28's worked example
+  is a learning context call end to end, the end of session quiz is what replaced passive
+  tracking, and Q17 is answered against what learning needs.
+- **Wiki.** Uncertain, and deliberately not first. Two other things currently rest on it, see
+  below.
+- **Books.**
+- **An RSVP speed reader.**
+- **Controllers and monitors for other devices.**
+- **News.** An idea, with no design trace anywhere else in these documents.
+
+**Two things named as features already have homes and are not features.** Reminders is a
+delivery capability with its own service, see D13 and D30. A mobile application is a client
+surface over features that already exist rather than a feature of its own, see Q14.
+
+**Books, the speed reader, learning and the wiki cluster around reading and learning.** Whether
+that is four features or one general one holding four parts is decided when the first of them is
+planned. Either shape is identical from the core's and the brain's side, see D10.
+
+**Devices are the only candidate here that stresses anything structural**, and the design
+already absorbs it. Telemetry is high volume and almost none of it says anything about a person,
+so the feature holds the readings and emits an event only when something meaningful happens.
+That is D2 and D20 doing exactly what they were written for, and the filter in
+`Brain/docs/knowledge-model.md` is what decides which readings qualify. Worth confirming when
+that feature is planned rather than assuming.
+
+**Two things used to rest on the wiki and no longer do.** D12, cross feature entity links, and
+Q5, document memory, were both justified by a wiki that may never be built. Both were removed on
+2026 09 03 rather than rewritten around a different feature.
 
 ---
 

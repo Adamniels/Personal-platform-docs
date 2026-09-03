@@ -21,7 +21,8 @@ much has actually been decided, and it is worth knowing given D18 puts the core 
   account, the brain owns who you are as a person.
 - **Routing** to features. How much of this is code at all is open, see Q9.
 - **The feature registry**, where a feature declares itself. Contents open, see Q8.
-- **Serving the shell.** What the shell actually is, is open, see Q12.
+- **Serving the login flow.** The pages you see before you hold a token. Everything after that
+  belongs to the shell, which is not the core, see D34.
 
 ## What the core must never hold
 
@@ -83,5 +84,7 @@ Decisions that live in other folders and bind the core anyway.
 - **D30**, notification delivery is its own service, and specifically not this one.
 - **D33**, isolation is enforced by the datastore. Binds the accounts schema and how the core
   connects to it.
+- **D34**, the shell is not part of the core. Removes it from what the core serves, and leaves
+  the core with login, routing and the registry.
 - **The two contracts**, in `High-level/docs/feature-contract.md`. Both directions carry a
   verified user identity, which the core issues.
