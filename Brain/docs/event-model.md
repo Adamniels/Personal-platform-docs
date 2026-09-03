@@ -1,8 +1,7 @@
 # How the brain records things
 
-Working document. Covers the second half of Q1 in `open-questions.md`: the shape of memory
-events. Companion to `knowledge-model.md`, which covers what the brain is trying to know. This
-one covers how evidence gets in.
+Working document. Covers the shape of memory events. Companion to `knowledge-model.md`, which
+covers what the brain is trying to know. This one covers how evidence gets in.
 
 Last updated: 2026 09 03
 
@@ -288,11 +287,22 @@ query inside it is scoped.
   to be linked, merged, or checked for contradiction with existing memory. Immediate effect
   and later integration are separate concerns and both happen.
 
+**How much of the first version is deterministic is decided when it is built.** The starting
+position is to do as much as possible with rules and no model at all: linking evidence to
+existing claims, detecting contradictions, noticing repeats. Model reasoning gets added where
+the rules visibly fall short rather than being assumed from the start, which also leaves the
+evaluation harness a deterministic baseline to measure the model against.
+
+**One thing it has to decide is what to do with evidence that supports nothing yet.** Whether
+"evidence exists but no claim has formed" is a state retrieval can express, or whether silence
+is fine. It reads like a retrieval question and is not, because nothing can express that state
+until consolidation is what decides a claim has not formed.
+
 ---
 
 ## Immediacy
 
-Settled 2026 08 04. Q15 is closed.
+Settled 2026 08 04.
 
 Consolidation exists to infer claims from behaviour. When Adam records a fact there is
 nothing to infer, so it does not wait.
@@ -316,18 +326,8 @@ trivial for one user, but it has to be a rule rather than something discovered l
 
 **Correction 2026 08 04.** An earlier version had assertions writing immediately to
 procedural memory, with "talk to me more concisely applies to the next message" as the
-example. That single example generated the scope and confirmation problems tracked as Q15.
-Both dissolved once it was recognised as a claim rather than a record.
-
----
-
-## Still open in this area
-
-- How the knowledge model represents level: discrete bands, a number, or something else (Q17)
-- Whether "misconceptions corrected" is a real memory type or just a note
-
-Closed since this was written: scope and confirmation on immediate writes (Q15, closed by D24
-and D25), and whether decisions get a side table (Q16, resolved no, see "Decisions" above).
+example. That single example generated a cluster of scope and confirmation problems, all of
+which dissolved once it was recognised as a claim rather than a record.
 
 ---
 

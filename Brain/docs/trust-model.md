@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 Who is allowed to change what, when a written thing takes effect, and how belief is scored and
 corrected. This is the densest cluster in the design and the six decisions below only make
@@ -67,9 +67,10 @@ ranking evidence of the same kind against itself.
 Consequence: seeding the knowledge model writes semantic memory carrying a high initial
 confidence, not profile. That is why the seed is movable, and it stops being a special case.
 
-Left open, and now clearly framed: which knowledge model corrections happen silently and
-which go to the review queue. Part of Q2. Current lean is that more goes through the queue at
-first, relaxed over time as it becomes clear what is safe to apply silently.
+Which knowledge model corrections happen silently and which go to the review queue is settled
+when consolidation is built, since consolidation is what produces them. The lean is that more
+goes through the queue at first, relaxed over time as it becomes clear what is safe to apply
+silently.
 
 ### D24. Scope is topic and entity. Never feature
 
@@ -120,7 +121,8 @@ global to that user, see D29.
 Why this rather than inferring the rule from the utterance: the channel resolves an ambiguity
 that no amount of structure could. Said in conversation means temporary, typed into the rules
 list means standing. No default to choose, no scope to announce, no confirmation step. This is
-what closed Q15, which existed entirely to manage the consequences of the opposite choice.
+what dissolved a cluster of scope and confirmation problems that existed entirely to manage the
+consequences of the opposite choice.
 
 **The temporary instruction is still recorded as an event.** It changes nothing permanent, but
 it is the evidence consolidation needs later to propose the standing rule, and it cannot be
@@ -160,7 +162,7 @@ to one user, so the read cost is nothing regardless of how many accounts exist, 
 now" wants currency to dominate. "What has Adam worked on over the years" wants it ignored
 entirely, because applying it there would hide the answer. That is why they cannot be stored
 pre merged, and it means a retrieval call has to say whether it is asking about now or about
-history. Constraint on Q3.
+history. Constraint on the retrieval interface, see D28.
 
 **Currency is undefined for records, not slow.** A record asserts nothing about now, so the
 mechanic does not apply to it. The rule that records must never be downweighted into
@@ -209,3 +211,34 @@ Product consequence: being able to edit anything means the memory centre is a ge
 browser rather than a profile page plus a rules list. Architecturally free, but a meaningful
 share of the real build work sits there, and it is larger than what D18 scoped for the first
 milestone.
+
+---
+
+## Duplicates
+
+How duplicates are detected and merged is consolidation's work and is written when consolidation
+is. It belongs to the trust model because merging is the one operation that can lose an evidence
+link, and D22 forbids destroying anything. So a merge is a supersedes relation with both sides
+still readable, not a rewrite that leaves one claim standing.
+
+## What is never inferred
+
+Some things should not be concluded about a person even where the evidence supports them.
+Profile is already protected, since under D23 evidence cannot move it at all. What is left is the
+knowledge model and behavioural patterns, and the live case is the creepiness problem flagged
+under Behavioural patterns in `knowledge-model.md`. The line is drawn when consolidation exists
+and there is something concrete to refuse, rather than as a list written in advance.
+
+## The review queue
+
+A proposal arrives carrying its evidence and its confidence, and the owner accepts, rejects, or
+edits it. The three do different things, and D27 already fixes two: an edit transfers provenance
+to the owner, and both an edit and a rejection record a judgment event so the next pass does not
+re propose what was just refused.
+
+**Rejections are kept, never deleted.** Every accept and every reject is a labelled evaluation
+example, which D16 wants and which cannot be reconstructed later. So the lifecycle has to
+preserve them.
+
+The rest, what a proposal looks like while it waits and what happens to one nobody ever answers,
+is written when the queue is built.

@@ -1,8 +1,7 @@
 # What the brain should know
 
-Working document. Covers the first half of Q1 in `open-questions.md`: what the brain is
-trying to know about a user. The second half, deriving concrete event shapes from this, is in
-`event-model.md`.
+Working document. Covers what the brain is trying to know about a user. Deriving concrete event
+shapes from this is the companion job, and it is in `event-model.md`.
 
 Last updated: 2026 09 02
 
@@ -84,7 +83,8 @@ than generic.
 
 What he knows and how well. Topics he is solid on, actively learning, touched shallowly,
 deliberately not pursuing. Also misconceptions that have been corrected, which is underused
-elsewhere.
+elsewhere. Whether a corrected misconception is a memory type of its own or simply a note is
+settled when the schema is written.
 
 Highest priority because one investment improves several outputs at once (learning sessions
 stop repeating known material, news ranking stops surfacing basics, explanations start at
@@ -247,10 +247,15 @@ well before the hard parts work.
 
 ---
 
-## Still open in this area
+## How level is represented
 
-- Whether "misconceptions corrected" is a real memory type or just a note.
-- How the knowledge model represents level. Discrete bands, a number, or something else (Q17).
+Level is the knowledge model's core value: solid, actively learning, touched shallowly,
+deliberately not pursuing. How it is stored is chosen when the schema is written, and that is
+the next thing this document needs, because the first milestone seeds the knowledge model by
+hand and cannot do that without a shape to seed into.
 
-Closed since this was written: deriving concrete event shapes from the claims above, the
-mechanical half of Q1, now in `event-model.md`.
+The candidates are discrete bands, a number, or something else. Whatever is chosen has to work
+with seeding above, where the owner's self assessment is a prior that evidence may move, so it
+needs to support a value that shifts in small steps. It also has to avoid claiming a precision
+nobody can justify, which is the argument that already killed the weighted relevance formula and
+the decay curves in D26.

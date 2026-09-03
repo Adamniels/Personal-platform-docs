@@ -17,7 +17,6 @@ here: D1, D11, D15, D33 and the memory layers are in
 - `trust-model.md` — authority, application, and how belief is corrected
 - `knowledge-model.md` — what the brain is trying to know about a user
 - `event-model.md` — how evidence gets recorded, and the event shape
-- `open-questions.md` — what is still open inside the brain
 
 ---
 
@@ -72,6 +71,10 @@ the right thing) and comes later.
 Same window processed twice produces no duplicate proposals. Good practice regardless, and
 it happens to be the only thing that makes adding durable orchestration later a config
 change rather than a rewrite.
+
+There is no durable orchestration today and nothing assumes one. If the consolidation schedule
+ever needs it, Temporal is the candidate, and some features may end up running their own jobs
+instead. Because of this decision that stays a config change whenever it is made.
 
 ### D28. Retrieval is per feature calls over shared primitives
 
@@ -135,7 +138,7 @@ exists.
 **Decided 2026 09 03.** The memory centre is the brain's own UI over its own data. It is not a
 feature and does not use the feature contract. It holds the profile editor, the general item
 browser D27 turns it into, the timeline, the standing rules list from D25, and the review queue
-from Q4.
+described in `trust-model.md`.
 
 **Why this needed saying at all.** D10's tier table was the only place these were described,
 as "embedded" things that stored in the brain and had their UI drawn by the core shell. D10
@@ -177,8 +180,9 @@ evaluation.
 **A side table for decisions.** They have a lifecycle (active, then superseded) that an
 append only event log cannot carry, which looked like it needed special handling. It does
 not: a decision is a thing that happened plus a thing with current status, which is exactly
-the shape of a semantic memory, and memory items are already separate from memory events.
-Resolved as Q16.
+the shape of a semantic memory, and memory items are already separate from memory events. It
+also corrected an error, that decisions were pure records that never decay: a decision produces
+a permanent record *and* a standing claim that can be superseded. Detail in `event-model.md`.
 
 **Section level instrumentation as a global requirement.** Considered as the passive signal
 that would maintain the knowledge model. Superseded by direct assessment: the quiz Adam

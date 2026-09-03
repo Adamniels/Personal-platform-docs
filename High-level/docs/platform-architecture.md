@@ -12,15 +12,13 @@ Anything you only need when you sit down to write a particular service lives in 
 folder instead, `Brain/docs/` or `Core/docs/`. Those documents point back here. This one points
 down to them for detail rather than repeating it.
 
-**On numbering.** Decision numbers (D1 to D34) and question numbers (Q1 to Q19) are global
-and permanent across every folder. They are never renumbered when a document moves, because
-decisions cite each other and several carry amendment history. `docs/README.md` at the repo
-root maps every number to the file it lives in.
+**On numbering.** Decision numbers are global and permanent across every folder. They are never
+renumbered when a document moves, because decisions cite each other and several carry amendment
+history. `docs/README.md` at the repo root maps every number to the file it lives in.
 
 **Related documents**
 
 - `High-level/docs/feature-contract.md` — what a feature is, and what it may depend on
-- `High-level/docs/open-questions.md` — what is still open across the platform
 - `Core/docs/` — the core in depth
 - `Brain/docs/` — the brain in depth
 
@@ -36,7 +34,7 @@ rather than a collection of apps, and it is the part most worth getting right.
 that size.** This is meant to become the owner's main tool in daily life, with features added
 over years rather than a small fixed set that gets finished. Three things follow. D3, features
 never call each other, is the rule that matters most, since it is what keeps growth linear
-instead of quadratic. The shell is a real surface rather than a list of links, see Q12. And the
+instead of quadratic. The shell is a real surface rather than a list of links, see D34. And the
 polyglot cost accepted in D14 is paid once per feature rather than once, by one person, which is
 a real running cost rather than a one time one.
 
@@ -44,13 +42,10 @@ Related Notion pages: "Northstar OS" (project entry), "Northstar OS, my personal
 "Wiki project". v1 material lives under "My Platform (1)" and "Implementing memory" and is
 reference only, see "Carried from v1" below.
 
-**Other documents in this folder**
+**Other documents worth reading next**
 
-- `open-questions.md` — living list of what is still undecided, and what blocks each
 - `Brain/docs/knowledge-model.md` — what the brain is trying to know about a user
 - `Brain/docs/event-model.md` — how evidence gets recorded, and the event shape
-- `overview.html` — synthesis of the whole design state in one page, with a diagram. Derived
-  from the files above rather than authoritative, so regenerate it when decisions change
 
 **A naming convention, since D29 made it matter.** The platform is multi user. Where a rule
 says "the owner" it means whoever owns that data, and the rule holds for every account. Where
@@ -152,14 +147,15 @@ feature languages are no longer pre assigned.
 - **TypeScript** for frontends, likely React.
 - **Each feature picks its own language when that feature is planned**, not now.
 
-Mobile is deferred entirely, Swift or Expo, decided much later.
+Mobile is deferred entirely. Swift or Expo, decided much later, and partly determined by
+whether the web frontends end up sharing enough to be worth reusing.
 
 **Why the brain is Python.** Its hardest work is consolidation, embeddings, clustering, and
 LLM orchestration, and v1's real failure was splitting memory across two languages. One
 service in the language where its hardest work lives removes that split by construction.
 
-**Why the core is Rust, and this closes Q7.** Q7 asked Go or C#, and framed it correctly: the
-question is not which language is better but which direction each one pushes the design. C#
+**Why the core is Rust.** The choice was framed as Go against C#, and the framing is what made
+it answerable: not which language is better, but which direction each one pushes the design. C#
 invites a richer domain model and heavier features. Go invites small boring services.
 
 Rust is Go's direction, more strongly. Building a rich domain model in it is possible but high
@@ -167,11 +163,16 @@ friction, and that friction is exactly the behaviour the core is already require
 since it must never be down and therefore must hold nothing interesting. The friction is a
 forcing function backing a stated goal rather than a tax.
 
+One correction worth keeping, because the mistake is easy to repeat. The case for Go was written
+as pushing complexity into the brain instead. It does not. Under D2 and D7 complexity displaced
+from a thin core lands in *features*, since the brain is forbidden from deciding anything in a
+feature's domain. That makes the Go and Rust direction more aligned with the rest of the design
+than the original wording suggested.
+
 Two consequences, one of them free:
 
-- **Q10 dissolves rather than resolving.** The only argument for putting `projects` inside the
-  core codebase was that both would be C#. With the core in Rust the temptation is gone, and
-  the availability argument wins by default.
+- **Putting `projects` inside the core codebase stops being tempting.** Its only argument was
+  that both would have been C#, and that is gone. See `Core/docs/core-architecture.md`.
 - **The cost is authentication.** C# would have handed over a complete, vetted auth system.
   Rust has excellent primitives and no assembled whole, so the flows are written by hand. That
   is accepted deliberately: it is wanted as practice, the blast radius is one personal
@@ -294,13 +295,15 @@ Why not the brain: by D13 it holds no memory, emits nothing to the brain, and re
 from it. It has no reason to live there.
 
 Scope: accept a delivery request from a feature or from the user, hold it until its time or
-condition, deliver it, record that it was delivered. Nothing else. Its language is not decided
-here, see the open questions.
+condition, deliver it, record that it was delivered. Nothing else.
+
+Its language is chosen when it is designed. It is scheduling and delivery, nothing AI shaped, and
+it holds no memory, so Rust would fit and would extend the practice motive behind D14.
 
 ### D33. Isolation is enforced by the datastore, not by query discipline
 
 
-**Decided 2026 09 03, closing Q18.** D29 made every row belong to exactly one user. This decides
+**Decided 2026 09 03.** D29 made every row belong to exactly one user. This decides
 where that is enforced: in the database, not in the code that queries it.
 
 **The rule is the property, not the mechanism.** Wherever a datastore can refuse to return
@@ -341,10 +344,9 @@ background jobs and anything run by hand. Policies add a predicate to every plan
 ### D34. The shell is not part of the core
 
 
-**Decided 2026 09 03, splitting Q12.** Q12 asked how ambitious the shell should be and treated
-that as one question. It is two. How rich the front page is cannot be settled on paper and stays
-open. Where the shell lives and how it gets its data is answerable now, and it binds the core,
-which is being built first.
+**Decided 2026 09 03.** How ambitious the shell should be and where it lives are two different
+things. This decides where it lives. How rich it is comes at the end, and is deliberately left
+unsettled.
 
 **The core serves the login flow and nothing past it.** Everything before you hold a token has
 to be the core's. Everything after it belongs to the shell. `Core/docs/core-architecture.md`
@@ -372,6 +374,14 @@ cross origin authentication has to work for every feature rather than only for n
 is the price of refusing a composition layer in the middle, and a composition layer is exactly
 what would have grown into the thing the core is forbidden to be.
 
+**How rich the shell is cannot be decided here.** A list of links, a front page with real content
+on it, or one unified product where every feature shares a design system and navigation feels
+seamless. That one is answered by using the thing rather than by reasoning about it. Two things
+are worth carrying into it: the stated ambition of a main daily tool makes the list of links
+unlikely, and the unified product is the largest permanent cost in the whole plan, larger than
+D14's polyglot cost, because every feature ever built has to be dragged into the same design
+system forever.
+
 ---
 
 ## Memory layers
@@ -391,7 +401,7 @@ Dropped: working memory (it is workflow state and belongs to whatever runs the w
 graph memory (never built in v1), and document memory. Document memory was dropped on the
 grounds that the wiki covers long form artifacts, which no longer holds since the wiki may never
 exist, but the conclusion stands on its own: if a feature ever needs long form artifacts
-remembered, that is raised then. Closed as Q5.
+remembered, that is raised then.
 
 ---
 
@@ -399,13 +409,14 @@ remembered, that is raised then. Closed as Q5.
 
 Not a plan, and not a commitment. These are things that might get built, written down so the
 platform is designed with them in mind rather than around them. Any of them may be dropped, and
-things not on this list will certainly appear. It was Q13 until 2026 09 03, closed because
-asking for a complete list of features was never a question that could be answered.
+things not on this list will certainly appear. Asking for the complete list is not a question
+that can be answered, so it is not asked here.
 
 - **Projects.** Likely the first feature after the core.
 - **Learning new topics.** The candidate the brain design leans on hardest. D28's worked example
   is a learning context call end to end, the end of session quiz is what replaced passive
-  tracking, and Q17 is answered against what learning needs.
+  tracking, and how the knowledge model represents level is answered against what learning
+  needs.
 - **Wiki.** Uncertain, and deliberately not first. Two other things currently rest on it, see
   below.
 - **Books.**
@@ -415,7 +426,8 @@ asking for a complete list of features was never a question that could be answer
 
 **Two things named as features already have homes and are not features.** Reminders is a
 delivery capability with its own service, see D13 and D30. A mobile application is a client
-surface over features that already exist rather than a feature of its own, see Q14.
+surface over features that already exist rather than a feature of its own. Mobile itself is
+deferred entirely, see D14.
 
 **Books, the speed reader, learning and the wiki cluster around reading and learning.** Whether
 that is four features or one general one holding four parts is decided when the first of them is
@@ -428,9 +440,9 @@ That is D2 and D20 doing exactly what they were written for, and the filter in
 `Brain/docs/knowledge-model.md` is what decides which readings qualify. Worth confirming when
 that feature is planned rather than assuming.
 
-**Two things used to rest on the wiki and no longer do.** D12, cross feature entity links, and
-Q5, document memory, were both justified by a wiki that may never be built. Both were removed on
-2026 09 03 rather than rewritten around a different feature.
+**Two things used to rest on the wiki and no longer do.** Cross feature entity links, D12, and
+document memory in the memory layers above were both justified by a wiki that may never be
+built. Both were removed on 2026 09 03 rather than rewritten around a different feature.
 
 ---
 

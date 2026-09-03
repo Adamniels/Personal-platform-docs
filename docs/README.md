@@ -9,12 +9,6 @@ Planning is split by **level**, not by subsystem. The test for where something b
 > Who is constrained by it? If it constrains features or the platform, it is high level. If you
 > only need it when you sit down to write that service, it belongs to that service.
 
-And for questions:
-
-> Does answering it require knowing about more than one area, or does it merely affect several?
-> Requires more than one, it is a high level question. Merely affects, it lives where it gets
-> answered.
-
 **Nothing is written in two places.** There are no summaries or restatements, because a copy
 goes stale and then quietly lies. Documents point at each other instead, in both directions.
 
@@ -25,7 +19,9 @@ goes stale and then quietly lies. Documents point at each other instead, in both
 1. `High-level/docs/platform-architecture.md` — what the platform is and how its parts relate
 2. `High-level/docs/feature-contract.md` — what a feature is and what it may depend on
 3. `Core/docs/` or `Brain/docs/` — whichever you are about to build
-4. The open questions file in each folder — what is left to solve there
+
+Each document describes the current state of its area, including the parts deliberately left
+undesigned and what settles them. There is no separate list of loose ends.
 
 ## Layout
 
@@ -38,9 +34,10 @@ goes stale and then quietly lies. Documents point at each other instead, in both
 
 ## Numbering
 
-Decision and question numbers are **global and permanent**. They are never renumbered when a
-document moves, because decisions cite each other and several carry amendment history. This
-index is how you find one.
+Decision numbers are **global and permanent**. They are never renumbered when a document moves,
+because decisions cite each other and several carry amendment history. This index is how you
+find one. A decision that was removed or dissolved keeps its number, its heading and the record
+of why, so the index still finds it and nobody re proposes it blind.
 
 ## Decisions
 
@@ -57,6 +54,7 @@ index is how you find one.
 | D9  | We are not designing for standalone extraction                                   | `High-level/docs/platform-architecture.md` |
 | D10 | Feature tiers                                                                    | `High-level/docs/feature-contract.md`      |
 | D11 | Profile lives in the brain                                                       | `High-level/docs/platform-architecture.md` |
+| D12 | Cross feature entity links live in the brain, generically                        | `High-level/docs/platform-architecture.md` |
 | D13 | Reminders and notifications are a delivery capability, not a feature             | `High-level/docs/feature-contract.md`      |
 | D14 | Language is fixed per layer, and chosen per feature                              | `High-level/docs/platform-architecture.md` |
 | D15 | No LLM calls on the read path                                                    | `High-level/docs/platform-architecture.md` |
@@ -79,27 +77,3 @@ index is how you find one.
 | D32 | The brain owns its own surface                                                    | `Brain/docs/brain-architecture.md`         |
 | D33 | Isolation is enforced by the datastore, not by query discipline                  | `High-level/docs/platform-architecture.md` |
 | D34 | The shell is not part of the core                                                | `High-level/docs/platform-architecture.md` |
-
-## Questions
-
-| #   | Title                                                | Lives in                            |
-| --- | ---------------------------------------------------- | ----------------------------------- |
-| Q1  | What goes in a memory event                          | `Brain/docs/open-questions.md`      |
-| Q2  | The trust model                                      | `Brain/docs/open-questions.md`      |
-| Q3  | The retrieval interface                              | `Brain/docs/open-questions.md`      |
-| Q4  | Review queue lifecycle                               | `Brain/docs/open-questions.md`      |
-| Q5  | Does document memory survive                         | `Brain/docs/open-questions.md`      |
-| Q6  | What consolidation actually does in v1 of the brain  | `Brain/docs/open-questions.md`      |
-| Q7  | Core in Go or C#                                     | `Core/docs/open-questions.md`       |
-| Q8  | What the feature manifest contains                   | `Core/docs/open-questions.md`       |
-| Q9  | Routing implementation                               | `Core/docs/open-questions.md`       |
-| Q10 | Does projects live in the core codebase              | `Core/docs/open-questions.md`       |
-| Q11 | Temporal                                             | `High-level/docs/open-questions.md` |
-| Q12 | Shell UX ambition                                    | `High-level/docs/open-questions.md` |
-| Q13 | The feature list                                     | `High-level/docs/open-questions.md` |
-| Q14 | Mobile                                               | `High-level/docs/open-questions.md` |
-| Q15 | Scope and confirmation on immediate writes           | `Brain/docs/open-questions.md`      |
-| Q16 | Do decisions get a first class side table            | `Brain/docs/open-questions.md`      |
-| Q17 | How the knowledge model represents level             | `Brain/docs/open-questions.md`      |
-| Q18 | How user isolation is enforced                       | `High-level/docs/open-questions.md` |
-| Q19 | What language the notification service is written in | `High-level/docs/open-questions.md` |

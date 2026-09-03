@@ -19,8 +19,13 @@ much has actually been decided, and it is worth knowing given D18 puts the core 
 - **Authentication**, and the account record. See D31.
 - **Identity at the account level.** D11 draws the line: the core owns who you are as an
   account, the brain owns who you are as a person.
-- **Routing** to features. How much of this is code at all is open, see Q9.
-- **The feature registry**, where a feature declares itself. Contents open, see Q8.
+- **Routing** to features. Path based routing to separate processes may be a proxy config file,
+  Caddy or Traefik, rather than code, which would leave the core as a registry and token
+  verification and little else. Decided when it is built.
+- **The feature registry**, where a feature declares itself. A manifest carries its routes, its
+  read API version, the entity types it exposes and the scopes it requests. What exactly goes in
+  it is settled when there is a second feature to register, since one feature does not need a
+  registry to find itself.
 - **Serving the login flow.** The pages you see before you hold a token. Everything after that
   belongs to the shell, which is not the core, see D34.
 
@@ -38,7 +43,9 @@ that test, since it changes rarely. Two things have already been ruled out by it
 - **Notification delivery**, which changes whenever channels, schedules or templates change.
   It is its own service, see D30.
 
-`projects` was considered for the core codebase and rejected, see Q10 in the questions file.
+`projects` was considered for the core codebase and rejected. Its only argument was that both
+would have been C#, which went away with Rust, and the argument against stands unopposed: a bug
+in a scrum board should not take out routing for everything.
 
 D14 chose Rust partly for this reason: building a rich domain model in it is high friction, so
 the language makes the core boring rather than relying on discipline to keep it that way.
