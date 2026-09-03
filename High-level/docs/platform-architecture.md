@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 This is the top of the documentation. It holds what you need to understand the system before
 building any part of it: what the platform is, what services exist, and the decisions that
@@ -12,7 +12,7 @@ Anything you only need when you sit down to write a particular service lives in 
 folder instead, `Brain/docs/` or `Core/docs/`. Those documents point back here. This one points
 down to them for detail rather than repeating it.
 
-**On numbering.** Decision numbers (D1 to D31) and question numbers (Q1 to Q19) are global
+**On numbering.** Decision numbers (D1 to D32) and question numbers (Q1 to Q19) are global
 and permanent across every folder. They are never renumbered when a document moves, because
 decisions cite each other and several carry amendment history. `docs/README.md` at the repo
 root maps every number to the file it lives in.
@@ -156,9 +156,8 @@ Two consequences, one of them free:
 
 **Why feature languages are not decided here.** The old list assigned wiki, learning and news
 to Python and projects to C# before any of them had been designed. That is a guess wearing the
-clothes of a decision. D10 already constrains what matters, since a feature written in a
-language other than the brain's is federated by construction, and beyond that the choice
-belongs to the planning phase for that feature.
+clothes of a decision. Nothing constrains the choice, and it belongs to the planning phase for
+that feature. This previously leaned on D10's tier model, which has since dissolved, see D10.
 
 Note that the number of languages is deliberately not capped. The polyglot cost below is
 accepted per service rather than budgeted globally.
@@ -313,7 +312,7 @@ a design metaphor.
 
 **Pre assigning a language to every feature.** D14 named Python for wiki, learning and news and
 C# for projects before any of them was designed. That is a guess wearing the clothes of a
-decision. Feature language is now chosen at feature planning time, constrained only by D10.
+decision. Feature language is now chosen at feature planning time.
 
 **Splitting memory ownership across two languages.** This was v1's actual failure: the
 design said one language owned canonical memory and the other proposed candidates, and the

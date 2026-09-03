@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 How the brain is built. Everything here is internal: you need it to write the brain and you do
 not need it to understand the platform.
@@ -129,6 +129,38 @@ harness is the first caller. Per feature modules arrive with the first feature, 
 it really needs. That is better than designing the learning context call before learning
 exists.
 
+### D32. The brain owns its own surface
+
+
+**Decided 2026 09 03.** The memory centre is the brain's own UI over its own data. It is not a
+feature and does not use the feature contract. It holds the profile editor, the general item
+browser D27 turns it into, the timeline, the standing rules list from D25, and the review queue
+from Q4.
+
+**Why this needed saying at all.** D10's tier table was the only place these were described,
+as "embedded" things that stored in the brain and had their UI drawn by the core shell. D10
+dissolved on 2026 09 03, which left them with no home and made "is the memory centre a feature"
+answerable either way.
+
+**Why they are not features.** A feature owns domain data and exposes a narrow read API that
+the brain calls, see D2 and D4. These own no domain data at all. They read and write the
+brain's own stores, and there is nothing for the brain to call, so putting them behind the
+feature contract would mean the brain calling itself over HTTP to reach its own tables.
+
+**What follows:**
+
+- No feature registry entry, no read API, no thin module in the brain. None of the machinery
+  applies, because none of it has anything to do.
+- It still has a real frontend of its own, TypeScript per D14, talking to the brain. It is not
+  server rendered by the shell, which is what the dissolved tier assumed.
+- It sits behind the same authentication the core issues and carries the same verified user
+  scope as any other caller, see D29 and D31. Outside the feature contract is not outside the
+  platform.
+- Edits made here still record judgment events, see D27. That is the brain writing its own
+  log, not a feature using the upward contract.
+
+Not first milestone work, see the note under D18, but a meaningful share of the real build.
+
 ---
 
 ## Considered and dropped
@@ -168,8 +200,8 @@ Ideas worth keeping, as ideas, not code. v2 is a fresh build.
 - **Authority ordering.** Explicit user input outranks confirmed suggestion outranks
   repeated evidence outranks inference. Kept, but demoted by D23: it applies within a store
   rather than across all of memory. The false precision of fixed decimal weights is dropped.
-- **The memory centre UI concept.** Profile, learned about me, timeline, rules, review
-  queue. A place to see and correct what the system believes.
+- **The memory centre UI concept.** A place to see and correct what the system believes.
+  Carried, and now a decision of its own, see D32.
 - **Not markdown as the storage substrate.** Markdown is a fine authoring format for things
   written by hand. It is a bad query substrate. Storage and retrieval is Postgres plus
   pgvector.

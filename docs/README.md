@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 Planning is split by **level**, not by subsystem. The test for where something belongs:
 
@@ -55,7 +55,7 @@ index is how you find one.
 | D7  | The brain never makes a decision that belongs to a feature's domain              | `High-level/docs/feature-contract.md`      |
 | D8  | Each feature wraps brain access behind one internal port                         | `High-level/docs/feature-contract.md`      |
 | D9  | We are not designing for standalone extraction                                   | `High-level/docs/platform-architecture.md` |
-| D10 | Feature tiers                                                                    | `High-level/docs/feature-contract.md`      |
+| D10 | Feature tiers (dissolved 2026 09 03)                                                                    | `High-level/docs/feature-contract.md`      |
 | D11 | Profile lives in the brain                                                       | `High-level/docs/platform-architecture.md` |
 | D12 | Cross feature entity links live in the brain, generically                        | `High-level/docs/platform-architecture.md` |
 | D13 | Reminders and notifications are a delivery capability, not a feature             | `High-level/docs/feature-contract.md`      |
@@ -77,6 +77,7 @@ index is how you find one.
 | D29 | Multi user from the start, fully isolated                                        | `High-level/docs/platform-architecture.md` |
 | D30 | Notification delivery is its own service                                         | `High-level/docs/platform-architecture.md` |
 | D31 | Authentication is built by hand, and registration is invite coded                | `Core/docs/core-architecture.md`           |
+| D32 | The brain owns its own surface                                                    | `Brain/docs/brain-architecture.md`         |
 
 ## Questions
 

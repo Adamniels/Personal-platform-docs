@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 02
+Last updated: 2026 09 03
 
 The rules a feature author has to know. Isolation of implementation, coupling through
 contracts, and nothing else.
@@ -56,21 +56,32 @@ own test suite, and so the implementation can be swapped without touching caller
 ### D10. Feature tiers
 
 
-| Tier      | Owns a database         | Owns a frontend            | Talks to the brain   |
-| --------- | ----------------------- | -------------------------- | -------------------- |
-| Federated | yes                     | yes                        | yes, both directions |
-| Embedded  | no, stores in the brain | rendered by the core shell | yes, it is inside it |
-| Linked    | irrelevant              | its own                    | no                   |
+**Dissolved 2026 09 03 rather than answered.** This defined three tiers, federated, embedded
+and linked. Two of them were empty and the third was every feature, so the model sorted
+nothing.
 
-The tier mostly decides itself: **a feature written in a language other than the brain's is
-federated by construction**, because embedded means living inside the brain's process and
-database. Anything owning real domain data is federated too.
+Embedded meant a feature living inside the brain's process and database with its UI drawn by
+the core shell. Its only occupant was ever reminders, which D13 removed by ruling it is not a
+feature at all. D14 then removed what fed it: embedded requires the brain's own language, and
+once each feature picks its language at its own planning phase, landing in Python is a
+coincidence rather than a reason to move a feature inside the brain. A written route into the
+brain is also the exact pressure D1 was raised against, since a general service absorbs what
+sits next to it because it is always the path of least resistance. Linked was never occupied
+either, and describes a link in the navigation rather than a feature.
 
-Current placement: wiki federated, projects federated, learning federated,
-reminders is not a feature at all, see D13.
+**What replaces it, and it is deliberately loose.** A feature is whatever registers itself with
+the core and talks to the brain through the two contracts below. It owns its data and its
+frontend. What sits inside it is its own business, whether that is one thing or several smaller
+ones bundled under a general name, and either shape looks identical to the core and the brain.
 
-comment to remove after we gone through this: what even could be an embedded feature? i dont think any feature
-is directly "in" the brain, it is more just either a core feature in core or it is its own feature
+Nothing else needed to be a rule. Everything the table actually enforced is already stated
+elsewhere: features own their data (D2), the brain does not reach into their databases (D4),
+and access runs through one port (D8). What is left is a judgment taken per feature when that
+feature is planned, which is where it belongs, and the tiers were taking it years early.
+
+The one thing the table did describe that had nowhere else to go, the memory centre and the
+review queue, turned out not to be features either. They are the brain's own surface over its
+own data, see D32.
 
 ### D13. Reminders and notifications are a delivery capability, not a feature
 
@@ -79,7 +90,8 @@ A feature sends a request: tell the user this, at this time or under this condit
 gets linked. Self authored reminders ("call the dentist", "look at the Q3 numbers on Friday")
 go through the same service with the user as the source instead of a feature.
 
-This corrected an earlier misclassification of reminders as an embedded feature.
+This corrected an earlier misclassification of reminders as an embedded feature, a tier that
+has since dissolved, see D10.
 
 **Clarified 2026 09 02, and this is the part that was ambiguous.** A reminder is a note the
 user wants delivered back to himself at a time. **The system never reads a reminder as a
