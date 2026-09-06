@@ -18,35 +18,39 @@ worked out rather than a gap in the writing. Worth knowing, given the core goes 
 - **Authentication**, and the account record.
 - **Identity at the account level.** The core owns who you are as an account, the brain owns who
   you are as a person.
-- **Routing** to features. Path based routing to separate processes may end up being a proxy
-  config file, Caddy or Traefik, rather than code, which would leave the core as a registry and
-  token verification and not much else. Worked out when it is built.
+- **Routing** to features, which is a reverse proxy. Path based routing to separate processes is
+  most likely a Caddy or Traefik config file rather than code. It also puts everything behind one
+  domain, which is what makes cookies and requests between the core and features simple.
 - **The feature registry**, where a feature declares itself. A manifest would carry its routes,
   its read API version, the entity types it exposes and the scopes it requests. What exactly
   goes in it matters once there is a second feature to register, since one feature does not need
   a registry to find itself.
-- **Serving the login flow**, meaning the pages you see before you hold a token. Everything
-  after that belongs to the shell, which is not the core.
+- **Its own frontend**, meaning the login pages, the front page, and shared navigation.
+- **Composing the front page**, meaning calling the display endpoints of whichever features you
+  chose and assembling the result.
 
-## What the core must never hold
+## What the core grows into, and what stays out
 
-The test: if it would ever give you a reason to deploy the core, it does not belong in the core.
+The core changes as features arrive, and that is the workflow rather than a smell. Adding a
+feature means three things outside the feature itself: a proxy entry, connecting it to the brain,
+and deciding whether anything of it belongs on the front page. There is no rule against the core
+changing, and there is no requirement that it never be down. Sessions survive a restart, since
+tokens are verified locally rather than by calling back.
 
-The core must never be down, which is the whole reason it is kept boring. Authentication passes
-the test, since it changes rarely. Three things have already failed it:
+Two things still do not belong in it, for their own reasons rather than because a test says so.
 
-- **Domain data of any kind.** A general backend slowly absorbs every feature's data because it
-  is always the path of least resistance, and making the core a client of the brain rather than
-  its owner is what keeps that honest.
-- **Notification delivery**, which changes whenever channels, schedules or templates change.
-- **The shell**, which is a front page and changes constantly.
+**Domain data.** A general backend slowly absorbs every feature's data because it is always the
+path of least resistance. Features own their data, the brain owns what it means, and the core
+holds neither. Note that composing the front page does not breach this: a feature sends display
+data for that moment, the core renders it and keeps nothing.
 
-`projects` was considered for the core codebase and dropped. Its only argument was that both
-would have been C#, which went away with Rust, and the argument against stands unopposed: a bug
-in a scrum board should not take out routing for everything.
+**Notification delivery.** It needs persistence and background scheduling, which is a different
+runtime shape from a service that answers requests. Its own small service, see
+`High-level/docs/platform-architecture.md`.
 
-Rust helps here rather than relying on discipline. Building a rich domain model in it is high
-friction, so the language makes the core boring by default.
+`projects` was considered for the core codebase and dropped, since a bug in a scrum board should
+not take out routing for everything. Its only argument was that both would have been C#, which
+went away with Rust.
 
 ---
 
@@ -73,6 +77,21 @@ be dropped in later without touching the brain or any feature.
 
 ---
 
+## What a feature exposes for the front page
+
+Optional, per feature, and not a contract. When you build a feature you decide whether anything
+of it belongs on the front page. If it does, it exposes an endpoint returning display data, and
+the core calls it with your token forwarded.
+
+It returns data, not rendered output. The core decides how it looks, which is what keeps the page
+coherent rather than a patchwork, and what keeps the endpoint useful to anything else that might
+want to read it later.
+
+Nothing is required. A feature with nothing worth showing exposes nothing, and the registry
+records which features have one and where.
+
+---
+
 ## What shapes the core from elsewhere
 
 All in `High-level/docs/platform-architecture.md`:
@@ -81,7 +100,7 @@ All in `High-level/docs/platform-architecture.md`:
 - The core track goes first, and what is in it.
 - Multi user from the start, and isolation enforced by the datastore rather than by query
   discipline. That binds the accounts schema and how the core connects to it.
-- Notification delivery and the shell are their own things, not this one.
+- Notification delivery is its own service, not this one.
 - Profile lives in the brain, which fixes the account versus person line.
 
 And in `High-level/docs/feature-contract.md`: both directions of the two contracts carry a

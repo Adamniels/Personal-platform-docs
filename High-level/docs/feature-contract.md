@@ -19,6 +19,10 @@ What sits inside it is its own business, whether that is one thing or several sm
 bundled under a general name. Either shape looks identical from the core's and the brain's side,
 so there is nothing to standardise and nothing to declare.
 
+A feature may also expose an endpoint with display data for the front page, and may include the
+core's navigation script. Both are optional, neither is a contract, and both are described in
+`Core/docs/core-architecture.md`.
+
 ## Features own their data
 
 A wiki concept node belongs to the wiki. A learning session belongs to learning. The brain never

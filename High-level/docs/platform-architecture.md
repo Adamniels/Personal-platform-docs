@@ -39,7 +39,8 @@ The ambition is large, and it is worth saying because a few things only make sen
 size. This is meant to become the owner's main tool in daily life, with features added over
 years rather than a small fixed set that gets finished. Three things follow from that. Features
 not calling each other is what keeps growth linear instead of quadratic, which matters more the
-more features there are. The shell is a real surface rather than a list of links. And the cost
+more features there are. The front page is a real surface rather than a list of links. And the
+cost
 of running several languages is paid once per feature rather than once, by one person, so it is
 a running cost rather than a one time one.
 
@@ -209,39 +210,81 @@ them.
 
 ---
 
-## The shell
+## The core's frontend
 
-The shell is the front door and the corridor: what you see after logging in, and how you get
-from one feature to another. It is not optional, because you have to land somewhere.
+The core has a frontend, and the front page is its main screen. It is what you see after logging
+in, and it is where you go to reach anything else.
 
-**It is not part of the core.** The core serves the login flow, everything before you hold a
-token. Everything after that belongs to the shell. A front page changes constantly, and
-anything that gives you a reason to deploy the core does not belong in the core.
+It is not a wrapper. A feature's frontend is its own page on its own process, and the proxy
+routes you to it, so clicking through to the wiki means leaving the front page and arriving at
+the wiki's. Nothing is contained inside anything.
 
-**It is most naturally just a feature.** A feature is whatever registers itself with the core
-and talks to the brain, and a shell does exactly that, so nothing new has to exist to hold it.
+**The front page is composed on the server.** When you build a feature you decide whether
+anything from it belongs on the front page. If it does, the feature exposes an endpoint with
+display data, and the core calls it, assembles whatever came back, and serves the page in one
+response.
 
-**Front page data comes from the browser, not from the brain.** Each feature contributes its own
-piece of the page and the browser calls that feature directly with the user's token. The
-alternative was the brain brokering it, which it could, but that turns memory into a dashboard
-proxy and puts the most visited page in the platform behind a fan out through a service whose
-job is knowing things about a person. Going through the browser also means adding a feature
-never means editing something central. No feature calls another either way: a browser making
-requests on the user's behalf is the user.
+Two things follow, and both are the point rather than a compromise. The feature sends data, not
+rendered output, so the core decides how everything looks and the page stays coherent instead of
+becoming a patchwork of five ideas about layout. And a plain data endpoint can be read by
+anything later, a mobile client or something not thought of yet, which a rendered card cannot.
 
-What that costs: the front page is several parallel browser calls rather than one composed
-response, every feature has to expose something browser facing for its own piece, and cross
-origin authentication has to work everywhere rather than only for navigation. That is the price
-of refusing a composition layer in the middle, and a composition layer is what would have grown
-into the thing the core is supposed not to be.
+None of this is a contract. A feature is not required to expose anything, and what it sends is
+decided when that feature is built. `Core/docs/core-architecture.md` covers the mechanics.
 
-**How rich it should be is genuinely open.** A list of links, a front page with real content on
-it, or one unified product where every feature shares a design system and navigation feels
-seamless. That is answered by using the thing rather than by reasoning about it. Two things
-worth carrying into it: the ambition of a main daily tool makes the list of links unlikely, and
-the unified product is the largest permanent cost in the whole plan, larger than running several
-languages, because every feature ever built has to be dragged into the same design system
-forever.
+**Some details worth settling once.** The core calls features on your behalf by forwarding your
+token, rather than holding a service credential of its own. And the page renders with whatever
+came back, so a slow or missing feature costs you its piece and not the whole page.
+
+**Two things now reach across features, for different reasons.** The core reaches across them to
+display. The brain reaches across them to know. Keeping those apart is what stops the core
+drifting into interpretation and the brain into rendering.
+
+### Navigation
+
+Navigation is shared, and it lives in the core so it can improve everywhere at once.
+
+The core serves a small script and an endpoint:
+
+```
+GET /api/nav   ->  { features: [ {name: "Wiki", path: "/wiki"} ], user: {...} }
+GET /nav.js    ->  defines <platform-nav>, which fetches /api/nav and renders
+```
+
+A feature includes two lines and nothing else, in whatever it is written in:
+
+```html
+<script src="/nav.js" defer></script>
+<platform-nav current="wiki"></platform-nav>
+```
+
+**Why this rather than a shared component package.** A package would force every feature frontend
+to be React, which is a freedom deliberately left open, and changing the nav would mean bumping a
+version and redeploying every feature, so the nav would only ever be as current as the least
+recently touched one. A script served by the core is framework agnostic and updates everywhere on
+the next page load. A new feature appears in every other feature's nav without any of them being
+touched, because the list comes from the core.
+
+**Start it as nothing.** On day one `<platform-nav>` can render a single home link, which is the
+same work as hardcoding one, except the mechanism is now in place. Listing features, showing
+where you are, and anything later all land by editing the core once.
+
+**The rule that keeps it cheap: the nav renders and links, and does nothing else.** No shared
+state, no auth helpers, no component library riding along. That is what makes pulling a feature
+out later mean deleting two lines rather than unpicking a design system, and it is the failure
+mode a shared package tends toward on its own.
+
+**The tradeoff.** The nav becomes a runtime dependency on the core, so if the core is down it
+does not render. Little is lost: you could not have logged in either, a session already issued
+keeps working since verification is local, and the feature itself is unaffected. Reserve its
+height in CSS so the page does not jump while it loads.
+
+**How rich the front page should be is genuinely open.** A short list of links, a page with real
+content on it, or one unified product where every feature shares a design system. That is
+answered by using the thing rather than by reasoning about it. Two things worth carrying into it:
+the ambition of a main daily tool makes the list of links unlikely, and the unified product is
+the largest permanent cost in the whole plan, larger than running several languages, because
+every feature ever built has to be dragged into the same design system forever.
 
 ---
 
@@ -273,8 +316,9 @@ behind the core.
 Two tracks. They do not block each other, and saying so stops either from waiting on the other.
 
 **Core track.** Accounts, authentication, session and token issuance, invite coded
-registration, routing, and the feature registry. Finishable, well understood, and where the
-security work lives.
+registration, routing, the feature registry, and the core's own frontend with the front page on
+it. Finishable, well understood, where the security work lives, and the track that produces
+something you can actually look at.
 
 **Brain track.** Profile, plus events, plus deliberately dumb retrieval, plus roughly ten
 evaluation cases. Nothing else. Small, but it makes everything after it measurable.

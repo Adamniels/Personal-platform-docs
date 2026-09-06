@@ -32,7 +32,7 @@ open and what would settle them. There is no separate list of loose ends.
 | Folder             | Holds                                                                       |
 | ------------------ | --------------------------------------------------------------------------- |
 | `High-level/docs/` | The platform, the services that exist, and anything shaping more than one   |
-| `Core/docs/`       | The core: auth, accounts, routing, the registry                             |
+| `Core/docs/`       | The core: auth, accounts, routing, the registry, and its own frontend       |
 | `Brain/docs/`      | The brain: memory, the trust model, events, retrieval                       |
 | `docs/`            | This index, and anything that fits nowhere else                             |
 
@@ -41,15 +41,16 @@ open and what would settle them. There is no separate list of loose ends.
 **High level**
 
 - `platform-architecture.md` — the brain as a service, dependency and extraction, languages,
-  multi user and isolation, the shell, notifications, the first milestone, memory layers,
+  multi user and isolation, the core's frontend, notifications, the first milestone, memory
+  layers,
   candidate features, and what is deliberately not being done
 - `feature-contract.md` — what a feature is, what it owns, what it may depend on, the two
   contracts, and where reminders sit
 
 **Core**
 
-- `core-architecture.md` — what the core owns, what it must never hold, and how authentication
-  gets built
+- `core-architecture.md` — what the core owns, what stays out of it, how authentication gets
+  built, and what a feature exposes for the front page
 
 **Brain**
 

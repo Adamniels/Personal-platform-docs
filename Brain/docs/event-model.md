@@ -50,7 +50,7 @@ evidence, and a feature specific payload.
 ```
 verb:      exposed
 subject:   topic: postgres-indexing
-context:   feature: news, run: r-8812
+context:   origin: news, run: r-8812
 occurred:  2026-07-31T07:02   recorded: 2026-07-31T07:02
 evidence:  "Shown the article 'Index only scans and when they stop working',
             ranked third, surfaced for backend architecture interest."
@@ -60,7 +60,7 @@ payload:   { rank: 3, score: 0.82 }
 ```
 verb:      abandoned
 subject:   topic: postgres-indexing
-context:   feature: learning, run: r-9001
+context:   origin: learning, run: r-9001
 evidence:  "Session on B-tree internals. Got through 2 of 6 sections, stopped at
             page splits after getting the same case wrong twice."
 payload:   { sections_done: 2, sections_total: 6, stopped_at: "page splits" }
@@ -69,7 +69,7 @@ payload:   { sections_done: 2, sections_total: 6, stopped_at: "page splits" }
 ```
 verb:      asserted
 subject:   topic: distributed-systems
-context:   feature: core, source: manual-entry
+context:   origin: brain, source: manual-entry
 occurred:  2023-09-01        recorded: 2026-07-31
 evidence:  "Says he took a distributed systems course in autumn 2023 and came out
             of it around intermediate."
@@ -79,13 +79,25 @@ payload:   { claimed_level: "intermediate" }
 ```
 verb:      decided
 subject:   project: personal-platform
-context:   feature: projects
+context:   origin: projects
 evidence:  "Decided the brain is its own service, because splitting memory across
             two languages failed in v1. Rejected keeping memory inside the core
             backend."
 payload:   { decision: "brain is its own service",
              rejected: ["memory inside core backend"] }
 ```
+
+**Context says where the event came from.** The origin is the feature that emitted it, or the
+brain itself when the entry was made directly in the memory centre. A run groups the events from
+one pass of a feature. Context is not used for scoping, since scope is topic and entity and never
+feature.
+
+**Origin and source are different things and both matter.** Origin is where it came from, source
+is how it arose. A manual entry can happen in several places: typed into the memory centre,
+mentioned in passing during a learning session and captured by learning, or pasted into the plain
+language box described in `knowledge-model.md`. Same source, different origins, and the
+difference is worth keeping, because something typed deliberately and something said in passing
+while doing something else are not equally considered.
 
 **Evidence is readable text and it has to stand on its own.** Nothing in an event points at a
 row in a feature's database that the brain would have to go and read later, so the evidence is
