@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 03
+Last updated: 2026 09 08
 
 These are planning notes, not specifications. Everything here is a current position with the
 reasoning attached, and almost all of it can be argued with. A few things are written as rules,
@@ -44,13 +44,13 @@ open and what would settle them. There is no separate list of loose ends.
   multi user and isolation, the core's frontend, notifications, the first milestone, memory
   layers,
   candidate features, and what is deliberately not being done
-- `feature-contract.md` — what a feature is, what it owns, what it may depend on, the two
-  contracts, and where reminders sit
+- `feature-contract.md` — what a feature is, what it owns, what it may depend on, how it
+  authenticates a request, the two contracts, and where reminders sit
 
 **Core**
 
 - `core-architecture.md` — what the core owns, what stays out of it, how authentication gets
-  built, and what a feature exposes for the front page
+  built, the session and token model, and what a feature exposes for the front page
 
 **Brain**
 

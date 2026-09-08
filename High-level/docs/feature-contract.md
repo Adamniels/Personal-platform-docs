@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 03
+Last updated: 2026 09 08
 
 Isolation of implementation, coupling through contracts. This is what someone building a feature
 needs to know. The brain's own internals are in `Brain/docs/`, and the platform wide thinking
@@ -63,6 +63,11 @@ you get N squared coupling, every feature has to know the shape of every other o
 refactor anywhere breaks something somewhere else. At the size this platform is aiming for that
 is the difference between adding a feature being cheap and adding a feature being a project.
 It is the rule to defend hardest.
+
+Nothing enforces it cryptographically today. The session is one cookie valid at every feature, so
+a feature backend receives a credential it could replay against any other one. Per feature tokens
+are the answer if that ever stops being acceptable, and `Core/docs/core-architecture.md` covers
+why they are not built yet.
 
 Note that a browser calling several features to draw one page is not a feature calling another.
 That is the user, holding their own token.
@@ -143,6 +148,26 @@ done.
 `High-level/docs/platform-architecture.md` covers where the delivery service lives.
 
 ---
+
+## How a feature authenticates
+
+A feature verifies the user's token itself. It never takes the user id from a header set by
+something upstream, and it never takes it from a parameter. Three things, and this is the whole of
+it:
+
+- Fetch the core's public key from the endpoint it is served at, cache it, and verify the
+  signature on the access token in the request cookie. The identity is whatever the verified token
+  says.
+- On anything that changes state, check that the `Origin` header is the platform's own, and never
+  change state on a GET. That is the CSRF defence in full.
+- Handle expiry. An API call returns 401 and the frontend refreshes and retries; a plain page load
+  redirects to the core's refresh endpoint and back.
+
+So a feature frontend needing no authentication code is not quite true. It needs none to be
+authenticated, since the browser attaches the session cookie by itself on a shared origin, but the
+feature holds verification, an origin check, and one redirect. Everything else, issuing,
+refreshing, rotation, the cookies and the key, belongs to the core and is described in
+`Core/docs/core-architecture.md`.
 
 ## The two contracts
 
