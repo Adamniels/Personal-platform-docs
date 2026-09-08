@@ -41,16 +41,16 @@ open and what would settle them. There is no separate list of loose ends.
 **High level**
 
 - `platform-architecture.md` — the brain as a service, dependency and extraction, languages,
-  multi user and isolation, the core's frontend, notifications, the first milestone, memory
-  layers,
-  candidate features, and what is deliberately not being done
+  multi user and isolation, the user id, the core's frontend, notifications, the first milestone,
+  memory layers, candidate features, and what is deliberately not being done
 - `feature-contract.md` — what a feature is, what it owns, what it may depend on, how it
   authenticates a request, the two contracts, and where reminders sit
 
 **Core**
 
 - `core-architecture.md` — what the core owns, what stays out of it, how authentication gets
-  built, the session and token model, and what a feature exposes for the front page
+  built, the session and token model, the core's own tables and the user id, and what a feature
+  exposes for the front page
 
 **Brain**
 

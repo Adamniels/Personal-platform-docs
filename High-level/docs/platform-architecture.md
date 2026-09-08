@@ -2,7 +2,7 @@
 
 Status: exploratory. Nothing is built.
 
-Last updated: 2026 09 03
+Last updated: 2026 09 08
 
 The top of the documentation. What the platform is, what services exist, and the thinking that
 shapes more than one of them. Anything you only need when you sit down to write a particular
@@ -207,6 +207,17 @@ rather than limiting. Sharing, if it ever comes, belongs inside a feature. From 
 of view a collaborator is simply another account that logged in, so the wiki can share a page
 without the brain sharing anything. The boundary sits under the features rather than across
 them.
+
+**The user id is minted by the core and by nothing else.** Every other service stores what it was
+handed and never interprets it, so the only thing that has to be right is the value itself. It is
+a UUID rather than a counter, so two databases can never disagree about who account five is, and
+if an identity provider is ever dropped in later its subject identifier gets mapped to an account
+rather than becoming the user id. `Core/docs/core-architecture.md` has the shape and why changing
+it later is close to impossible.
+
+**The core is outside this rule**, because the queries that establish identity run before there is
+a user to scope to. The rule holds for the brain and for any feature holding per user data.
+`Core/docs/core-architecture.md` has the argument.
 
 ---
 

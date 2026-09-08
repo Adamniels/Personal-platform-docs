@@ -140,6 +140,89 @@ feature holds signature verification and one redirect, which is little but is no
 
 ---
 
+## The core's data
+
+Four tables, and nothing else.
+
+`accounts` holds the id, the email, the password hash, a status, and when it was created.
+`invite_codes` holds the code hashed, when it was created, when it expires, when it was used and
+by which account. `sessions` is the refresh side of the token model: id, account id, family id,
+token hash, issued at, expires at, used at, revoked at. `password_reset_tokens` has the same shape
+as invite codes, and whether it exists at all depends on where password reset lands.
+
+Invite codes, reset tokens and refresh tokens are stored hashed. Each of them is a credential, and
+a database backup should not be a working set of them. All three are plain random bytes rather
+than UUIDs, since a UUIDv7 carries its own creation time and a secret should carry nothing.
+
+Passwords are hashed with Argon2id through a library, per the line above about primitives.
+
+Email is normalised to lowercase and unique on that. Treating two spellings of one address as two
+accounts is a bug that first appears on a phone keyboard that capitalises.
+
+Nothing records a user agent or an IP address on a session yet. That would be wanted the day
+there is a device list to render, and adding a column to a table with three rows in it costs
+nothing, which is exactly what the next section is not.
+
+### The user id
+
+The account id is a UUIDv7, minted by the core and by nothing else.
+
+It is the hardest value in the platform to change, and that is worth understanding rather than
+taking on faith. It is not stored in one place. It is copied into the brain's events and claims,
+into every feature's own tables, and into every token in flight, across databases that cannot be
+joined and are never migrated together. Any other column is one `ALTER TABLE` away from being
+different. This one has no migration at all, because no service holds both the old value and the
+new one, and the brain's event log is append only, so rewriting an id in it contradicts the thing
+the log is for.
+
+**Not a counter.** Sequential integers are fine inside one database and dangerous the moment the
+value leaves it. Account five in a development database is a different person from account five in
+production, so restoring a partial backup, seeding a test environment, or importing anything from
+v1 can attach one person's history to another account with no error raised. The whole isolation
+story rests on this value being right, so it should be impossible to confuse rather than merely
+unlikely.
+
+**Not the email either.** A key should identify and nothing more. Email changes, and then either
+every copy gets rewritten or the key quietly lies. It also copies personal data into every table
+in every service, which is a strange thing to do deliberately in a system built on isolation.
+
+**Version 7 rather than 4**, for index locality. A random key lands in a random page of a B tree
+on every insert, so pages split half full and the working set becomes the whole index instead of
+its hot end. A time ordered key lands at the right hand edge like a counter does. Nobody notices
+this on a small table, and the brain's event table is append only and grows forever, which is the
+one place it bites. The cost of v7 is that it leaks its own creation time, which is meaningless
+for an account and is why secrets are not UUIDs.
+
+**An identity provider maps to this id rather than replacing it.** If the escape hatch above is
+ever used, the provider arrives with its own subject identifier, and in the moment it will look
+simpler to let that become the user id. It is not: an external id reaching the brain means
+rewriting the append only log. The core translates at the edge, and everything downstream keeps
+storing what it was handed without interpreting it.
+
+### Row level security does not apply here
+
+The platform enforces user isolation in the datastore rather than in query discipline, and
+`High-level/docs/platform-architecture.md` has the reasoning and the four conditions that make it
+real. The core is outside that rule.
+
+Look at what its queries are. Login finds an account by email, run by someone who has not yet
+proved they are anyone. Refresh finds a session by its token hash, located by the secret rather
+than by its owner. Redeeming an invite code is the same shape. There is no user id to put in the
+transaction scoped setting at the moment any of them run, because producing that user id is the
+entire job. Switching policies on would make login return zero rows, so it would have to be
+carved back out with an unauthenticated role permitting exactly those reads, which is ceremony
+protecting nothing.
+
+The deeper reason is that row level security earns its cost where the query surface is large,
+growing and written over years, which is the brain exactly. The core is a fixed handful of queries
+in one small codebase, and most of them cannot be user scoped even in principle. A safety
+mechanism placed where the failure mode is not becomes decoration.
+
+Two halves of the discipline are kept anyway, because they cost nothing and stand on their own:
+the application connects as a role that does not own its tables, and migrations run as the owner.
+
+---
+
 ## What a feature exposes for the front page
 
 Optional, per feature, and not a contract. When you build a feature you decide whether anything
